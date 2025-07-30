@@ -231,15 +231,6 @@ export default function SignInPage() {
               Sign up
             </Link>
           </div>
-
-          <div className="text-center text-white/50">
-            <Link
-              href="/auth/forgot-password"
-              className="hover:text-white/70 transition-colors duration-300"
-            >
-              Need help accessing your account?
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>
