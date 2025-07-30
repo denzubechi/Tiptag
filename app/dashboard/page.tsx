@@ -32,13 +32,10 @@ import {
   Zap,
   QrCode,
   Code,
-  Sparkles,
-  Trophy,
   Loader2,
   WalletIcon,
   ArrowUpRight,
   ArrowDownLeft,
-  Rocket,
 } from "lucide-react";
 import {
   LineChart,
@@ -119,7 +116,7 @@ interface DashboardData {
   }>;
 }
 
-export default function EnhancedDashboardPage() {
+export default function DashboardPage() {
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -129,17 +126,11 @@ export default function EnhancedDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [withdrawalLoading, setWithdrawalLoading] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (isConnected) {
       fetchDashboardData();
     }
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isConnected]);
 
   const fetchDashboardData = async () => {
@@ -165,7 +156,7 @@ export default function EnhancedDashboardPage() {
   const copyTipLink = () => {
     if (!dashboardData) return;
     navigator.clipboard.writeText(
-      `https://tiptag.com/tip/${dashboardData.user.tipTag}`
+      `https://tiptagi.com/tip/${dashboardData.user.tipTag}`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -187,7 +178,7 @@ export default function EnhancedDashboardPage() {
       });
 
       if (response.ok) {
-        await fetchDashboardData(); // Refresh data
+        await fetchDashboardData();
         alert("Withdrawal initiated successfully!");
       } else {
         const error = await response.json();
@@ -202,55 +193,42 @@ export default function EnhancedDashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
-        <div className="fixed inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
-        </div>
-        <Card className="w-full max-w-md bg-white/5 backdrop-blur-xl border-white/20 relative z-10 shadow-2xl">
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <Card className="w-full max-w-md bg-gray-900 border-gray-800">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-6">
-              <div className="relative">
-                <Heart className="h-10 w-10 text-purple-400 animate-pulse" />
-                <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-lg animate-pulse" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                tiptag
-              </span>
+              <Heart className="h-10 w-10 text-gray-400" />
+              <span className="text-3xl font-bold text-white">tiptagI</span>
             </div>
-            <CardTitle className="text-2xl bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl text-white">
               Connect Your Wallet
             </CardTitle>
-            <CardDescription className="text-white/70">
+            <CardDescription className="text-gray-400">
               Connect your wallet to access your creator dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex justify-center">
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                <Wallet>
-                  <ConnectWallet className="relative bg-black border-0 rounded-2xl px-8 py-4 text-white hover:bg-white/10 transition-all duration-300">
-                    <WalletIcon className="h-6 w-6 mr-3" />
-                    <span className="text-lg font-medium">Connect Wallet</span>
-                  </ConnectWallet>
-                  <WalletDropdown>
-                    <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                      <OnchainAvatar />
-                      <Name />
-                      <EthBalance />
-                    </Identity>
-                    <WalletDropdownLink
-                      icon="wallet"
-                      href="https://keys.coinbase.com"
-                    >
-                      Wallet
-                    </WalletDropdownLink>
-                    <WalletDropdownDisconnect />
-                  </WalletDropdown>
-                </Wallet>
-              </div>
+              <Wallet>
+                <ConnectWallet className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 px-8 py-4 text-lg font-medium">
+                  <WalletIcon className="h-6 w-6 mr-3" />
+                  <span>Connect Wallet</span>
+                </ConnectWallet>
+                <WalletDropdown>
+                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                    <OnchainAvatar />
+                    <Name />
+                    <EthBalance />
+                  </Identity>
+                  <WalletDropdownLink
+                    icon="wallet"
+                    href="https://keys.coinbase.com"
+                  >
+                    Wallet
+                  </WalletDropdownLink>
+                  <WalletDropdownDisconnect />
+                </WalletDropdown>
+              </Wallet>
             </div>
           </CardContent>
         </Card>
@@ -260,24 +238,10 @@ export default function EnhancedDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
-        <div className="fixed inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
-          <div
-            className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
-            style={{
-              left: mousePosition.x - 192,
-              top: mousePosition.y - 192,
-              transition: "all 0.3s ease-out",
-            }}
-          />
-        </div>
-        <div className="text-center relative z-10">
-          <div className="relative">
-            <Loader2 className="h-12 w-12 animate-spin text-purple-400 mx-auto mb-6" />
-            <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-xl animate-pulse" />
-          </div>
-          <p className="text-white/70 text-lg">Loading your dashboard...</p>
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-gray-400 mx-auto mb-6" />
+          <p className="text-gray-400 text-lg">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -285,12 +249,12 @@ export default function EnhancedDashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4 text-lg">Error: {error}</p>
           <Button
             onClick={fetchDashboardData}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl"
+            className="bg-gray-800 hover:bg-gray-700 border-gray-700"
           >
             Try Again
           </Button>
@@ -302,36 +266,15 @@ export default function EnhancedDashboardPage() {
   if (!dashboardData) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
-        <div
-          className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
-          style={{
-            left: mousePosition.x - 192,
-            top: mousePosition.y - 192,
-            transition: "all 0.3s ease-out",
-          }}
-        />
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl animate-bounce" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse" />
-      </div>
-
-      {/* Enhanced Header */}
-      <header className="relative z-50 border-b border-white/10 backdrop-blur-xl bg-black/50">
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Header */}
+      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="relative group">
-                <Heart className="h-8 w-8 text-purple-400 group-hover:text-pink-400 transition-colors duration-300" />
-                <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                tiptag
-              </span>
-              <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 border-green-500/30 animate-pulse">
-                <Rocket className="h-3 w-3 mr-1" />
+              <Heart className="h-8 w-8 text-gray-400" />
+              <span className="text-2xl font-bold text-white">tiptagI</span>
+              <Badge className="bg-gray-800 text-gray-300 border-gray-700">
                 Dashboard
               </Badge>
             </div>
@@ -340,7 +283,7 @@ export default function EnhancedDashboardPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   View Profile
@@ -350,7 +293,7 @@ export default function EnhancedDashboardPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white/80 hover:text-white hover:bg-white/10"
+                  className="text-gray-400 hover:text-white hover:bg-gray-800"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -380,209 +323,185 @@ export default function EnhancedDashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8 relative z-10">
+      <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
-                  Welcome back,
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {dashboardData.user.displayName}!
-                </span>
-                <Sparkles className="inline h-8 w-8 text-yellow-400 ml-4 animate-pulse" />
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+                Welcome back, {dashboardData.user.displayName}!
               </h1>
-              <p className="text-white/70 text-xl">
+              <p className="text-gray-400 text-xl">
                 Here's how your creator journey is progressing
               </p>
             </div>
-            <Badge className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30 px-6 py-3 text-lg">
-              <Trophy className="h-5 w-5 mr-2" />
+            <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-6 py-3 text-lg">
               Pro Creator
             </Badge>
           </div>
         </div>
 
-        {/* Enhanced Stats Cards */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {[
-            {
-              title: "Total Tips",
-              value: `$${dashboardData.user.totalTipsReceived.toFixed(2)}`,
-              subtitle: "All time earnings",
-              icon: DollarSign,
-              gradient: "from-purple-500 to-pink-500",
-              delay: "0s",
-            },
-            {
-              title: "Wallet Balance",
-              value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
-              subtitle: "Available to withdraw",
-              icon: WalletIcon,
-              gradient: "from-blue-500 to-cyan-500",
-              delay: "0.1s",
-            },
-            {
-              title: "Total Tips Count",
-              value: dashboardData.user.totalTipCount.toString(),
-              subtitle: `Avg: $${dashboardData.analytics.averageTip.toFixed(
-                2
-              )}`,
-              icon: Heart,
-              gradient: "from-green-500 to-emerald-500",
-              delay: "0.2s",
-            },
-            {
-              title: "Profile Views",
-              value: dashboardData.analytics.profileViews.toString(),
-              subtitle: `Conversion: ${dashboardData.analytics.conversionRate.toFixed(
-                1
-              )}%`,
-              icon: Users,
-              gradient: "from-orange-500 to-red-500",
-              delay: "0.3s",
-            },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="group cursor-pointer"
-              style={{ animationDelay: stat.delay }}
-            >
-              <Card
-                className={`bg-gradient-to-r ${stat.gradient} border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}
-              >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-white/90">
-                    {stat.title}
-                  </CardTitle>
-                  <stat.icon className="h-5 w-5 text-white/90 group-hover:scale-110 transition-transform duration-300" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-white mb-1">
-                    {stat.value}
-                  </div>
-                  <p className="text-xs text-white/80">{stat.subtitle}</p>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
+          <Card className="bg-gray-900 border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Tips
+              </CardTitle>
+              <DollarSign className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-white mb-1">
+                ${dashboardData.user.totalTipsReceived.toFixed(2)}
+              </div>
+              <p className="text-xs text-gray-500">All time earnings</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Wallet Balance
+              </CardTitle>
+              <WalletIcon className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-white mb-1">
+                ${dashboardData.user.walletBalance.toFixed(2)}
+              </div>
+              <p className="text-xs text-gray-500">Available to withdraw</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Tips Count
+              </CardTitle>
+              <Heart className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-white mb-1">
+                {dashboardData.user.totalTipCount}
+              </div>
+              <p className="text-xs text-gray-500">
+                Avg: ${dashboardData.analytics.averageTip.toFixed(2)}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Profile Views
+              </CardTitle>
+              <Users className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-white mb-1">
+                {dashboardData.analytics.profileViews}
+              </div>
+              <p className="text-xs text-gray-500">
+                Conversion: {dashboardData.analytics.conversionRate.toFixed(1)}%
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Wallet Management */}
-        <Card className="mb-12 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl border-blue-500/30 shadow-2xl">
+        <Card className="mb-12 bg-gray-900 border-gray-800">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <WalletIcon className="h-6 w-6 text-blue-400" />
-                  <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-lg animate-pulse" />
-                </div>
-                <CardTitle className="text-blue-300 text-2xl">
+                <WalletIcon className="h-6 w-6 text-gray-400" />
+                <CardTitle className="text-gray-300 text-2xl">
                   Wallet Management
                 </CardTitle>
               </div>
-              <Badge className="bg-green-500/20 text-green-300 border-green-500/30 animate-pulse">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+              <Badge className="bg-green-900 text-green-400 border-green-800">
                 Connected
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Available Balance",
-                  value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
-                  icon: ArrowDownLeft,
-                  color: "green",
-                  action: "Withdraw All",
-                },
-                {
-                  title: "This Month",
-                  value: `$${dashboardData.analytics.monthlyTips.toFixed(2)}`,
-                  icon: ArrowUpRight,
-                  color: "blue",
-                  subtitle: "Tips received",
-                },
-                {
-                  title: "Connected Wallet",
-                  value: `${dashboardData.user.walletAddress.slice(
-                    0,
-                    6
-                  )}...${dashboardData.user.walletAddress.slice(-4)}`,
-                  icon: WalletIcon,
-                  color: "purple",
-                  action: "Copy Address",
-                },
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 group"
-                >
-                  <div className="flex items-center space-x-3 mb-4">
-                    <item.icon
-                      className={`h-5 w-5 text-${item.color}-400 group-hover:scale-110 transition-transform duration-300`}
-                    />
-                    <span className="font-medium text-white/90">
-                      {item.title}
-                    </span>
-                  </div>
-                  <p
-                    className={`text-2xl font-bold text-${item.color}-400 mb-2`}
-                  >
-                    {item.value}
-                  </p>
-                  {item.subtitle && (
-                    <p className="text-white/60 text-sm mb-4">
-                      {item.subtitle}
-                    </p>
-                  )}
-                  {item.action && (
-                    <Button
-                      size="sm"
-                      className={`w-full bg-${item.color}-600 hover:bg-${item.color}-700 text-white rounded-xl transition-all duration-300 transform hover:scale-105`}
-                      onClick={() => {
-                        if (item.action === "Withdraw All") {
-                          handleWithdrawal(dashboardData.user.walletBalance);
-                        } else if (item.action === "Copy Address") {
-                          navigator.clipboard.writeText(
-                            dashboardData.user.walletAddress
-                          );
-                        }
-                      }}
-                      disabled={
-                        item.action === "Withdraw All" &&
-                        (withdrawalLoading ||
-                          dashboardData.user.walletBalance <= 0)
-                      }
-                    >
-                      {withdrawalLoading && item.action === "Withdraw All" ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      {item.action}
-                    </Button>
-                  )}
+              <div className="p-6 bg-gray-800 rounded-xl">
+                <div className="flex items-center space-x-3 mb-4">
+                  <ArrowDownLeft className="h-5 w-5 text-gray-400" />
+                  <span className="font-medium text-gray-300">
+                    Available Balance
+                  </span>
                 </div>
-              ))}
+                <p className="text-2xl font-bold text-white mb-2">
+                  ${dashboardData.user.walletBalance.toFixed(2)}
+                </p>
+                <Button
+                  size="sm"
+                  className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                  onClick={() =>
+                    handleWithdrawal(dashboardData.user.walletBalance)
+                  }
+                  disabled={
+                    withdrawalLoading || dashboardData.user.walletBalance <= 0
+                  }
+                >
+                  {withdrawalLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  Withdraw All
+                </Button>
+              </div>
+
+              <div className="p-6 bg-gray-800 rounded-xl">
+                <div className="flex items-center space-x-3 mb-4">
+                  <ArrowUpRight className="h-5 w-5 text-gray-400" />
+                  <span className="font-medium text-gray-300">This Month</span>
+                </div>
+                <p className="text-2xl font-bold text-white mb-2">
+                  ${dashboardData.analytics.monthlyTips.toFixed(2)}
+                </p>
+                <p className="text-gray-500 text-sm">Tips received</p>
+              </div>
+
+              <div className="p-6 bg-gray-800 rounded-xl">
+                <div className="flex items-center space-x-3 mb-4">
+                  <WalletIcon className="h-5 w-5 text-gray-400" />
+                  <span className="font-medium text-gray-300">
+                    Connected Wallet
+                  </span>
+                </div>
+                <p className="text-2xl font-bold text-white mb-2">
+                  {dashboardData.user.walletAddress.slice(0, 6)}...
+                  {dashboardData.user.walletAddress.slice(-4)}
+                </p>
+                <Button
+                  size="sm"
+                  className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      dashboardData.user.walletAddress
+                    )
+                  }
+                >
+                  Copy Address
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Current Goal Progress */}
         {dashboardData.currentGoal && dashboardData.currentGoal.isActive && (
-          <Card className="mb-12 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 backdrop-blur-xl border-indigo-500/30 shadow-2xl">
+          <Card className="mb-12 bg-gray-900 border-gray-800">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <Target className="h-6 w-6 text-indigo-400 animate-pulse" />
-                  <CardTitle className="text-indigo-300 text-2xl">
+                  <Target className="h-6 w-6 text-gray-400" />
+                  <CardTitle className="text-gray-300 text-2xl">
                     Current Goal: {dashboardData.currentGoal.title}
                   </CardTitle>
                 </div>
-                <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-lg px-4 py-2">
+                <Badge className="bg-gray-800 text-gray-300 border-gray-700 text-lg px-4 py-2">
                   {Math.round(
                     (dashboardData.currentGoal.currentAmount /
                       dashboardData.currentGoal.targetAmount) *
@@ -601,15 +520,14 @@ export default function EnhancedDashboardPage() {
                         dashboardData.currentGoal.targetAmount) *
                       100
                     }
-                    className="h-4 bg-white/10"
+                    className="h-4 bg-gray-800"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full blur animate-pulse" />
                 </div>
                 <div className="flex justify-between text-lg">
-                  <span className="text-white/80">
+                  <span className="text-gray-400">
                     ${dashboardData.currentGoal.currentAmount} raised
                   </span>
-                  <span className="font-semibold text-indigo-300">
+                  <span className="font-semibold text-white">
                     ${dashboardData.currentGoal.targetAmount} goal
                   </span>
                 </div>
@@ -618,7 +536,7 @@ export default function EnhancedDashboardPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300 backdrop-blur-sm bg-transparent"
+                      className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Goal
@@ -628,11 +546,11 @@ export default function EnhancedDashboardPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => {
-                      const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! ${dashboardData.currentGoal?.currentAmount}/${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptag.com/tip/${dashboardData.user.tipTag}`;
+                      const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! ${dashboardData.currentGoal?.currentAmount}/${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
                       navigator.share?.({ text: shareText }) ||
                         navigator.clipboard.writeText(shareText);
                     }}
-                    className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300 backdrop-blur-sm"
+                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
                   >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share Goal
@@ -643,65 +561,78 @@ export default function EnhancedDashboardPage() {
           </Card>
         )}
 
-        {/* Enhanced Tabs */}
+        {/* Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="space-y-8"
         >
-          <TabsList className="grid w-full grid-cols-5 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-2">
-            {[
-              { value: "overview", icon: BarChart3, label: "Overview" },
-              { value: "analytics", icon: TrendingUp, label: "Analytics" },
-              {
-                value: "transactions",
-                icon: WalletIcon,
-                label: "Transactions",
-              },
-              { value: "community", icon: Users, label: "Community" },
-              { value: "sharing", icon: Share2, label: "Sharing" },
-            ].map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white text-white/70 hover:text-white transition-all duration-300 rounded-xl"
-              >
-                <tab.icon className="h-4 w-4 mr-2" />
-                {tab.label}
-              </TabsTrigger>
-            ))}
+          <TabsList className="grid w-full grid-cols-5 bg-gray-900 border-gray-800">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger
+              value="analytics"
+              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger
+              value="transactions"
+              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+            >
+              <WalletIcon className="h-4 w-4 mr-2" />
+              Transactions
+            </TabsTrigger>
+            <TabsTrigger
+              value="community"
+              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Community
+            </TabsTrigger>
+            <TabsTrigger
+              value="sharing"
+              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Sharing
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Quick Actions */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <Zap className="h-6 w-6 mr-3 text-purple-400" />
-                    <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      Quick Actions
-                    </span>
+                  <CardTitle className="flex items-center text-xl text-white">
+                    <Zap className="h-6 w-6 mr-3 text-gray-400" />
+                    Quick Actions
                   </CardTitle>
-                  <CardDescription className="text-white/70">
-                    Manage your tiptag presence
+                  <CardDescription className="text-gray-400">
+                    Manage your tiptagI presence
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/90">
+                    <label className="text-sm font-medium text-gray-300">
                       Your Tip Link
                     </label>
                     <div className="flex items-center space-x-2">
-                      <code className="flex-1 px-4 py-3 bg-white/5 rounded-xl text-sm font-mono text-white/80 border border-white/10">
-                        tiptag.com/tip/{dashboardData.user.tipTag}
+                      <code className="flex-1 px-4 py-3 bg-gray-800 rounded-xl text-sm font-mono text-gray-300 border border-gray-700">
+                        tiptagi.com/tip/{dashboardData.user.tipTag}
                       </code>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={copyTipLink}
-                        className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 bg-transparent"
+                        className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
                       >
                         {copied ? "Copied!" : <Copy className="h-4 w-4" />}
                       </Button>
@@ -711,8 +642,7 @@ export default function EnhancedDashboardPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <Link href={`/${dashboardData.user.tipTag}`}>
                       <Button
-                        className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
-                        variant="outline"
+                        className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
                         size="sm"
                       >
                         <Eye className="h-4 w-4 mr-2" />
@@ -721,8 +651,7 @@ export default function EnhancedDashboardPage() {
                     </Link>
                     <Link href="/dashboard/profile">
                       <Button
-                        className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
-                        variant="outline"
+                        className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
                         size="sm"
                       >
                         <Edit className="h-4 w-4 mr-2" />
@@ -733,8 +662,7 @@ export default function EnhancedDashboardPage() {
 
                   <Link href="/dashboard/settings">
                     <Button
-                      className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
-                      variant="outline"
+                      className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
                       size="sm"
                     >
                       <Settings className="h-4 w-4 mr-2" />
@@ -746,27 +674,25 @@ export default function EnhancedDashboardPage() {
 
               {/* Recent Tips */}
               <div className="lg:col-span-2">
-                <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+                <Card className="bg-gray-900 border-gray-800">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center text-xl">
-                        <Gift className="h-6 w-6 mr-3 text-green-400" />
-                        <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                          Recent Tips
-                        </span>
+                      <CardTitle className="flex items-center text-xl text-white">
+                        <Gift className="h-6 w-6 mr-3 text-gray-400" />
+                        Recent Tips
                       </CardTitle>
                       <Link href="/dashboard/tips">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 bg-transparent"
+                          className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
                         >
                           View All
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
                     </div>
-                    <CardDescription className="text-white/70">
+                    <CardDescription className="text-gray-400">
                       Your latest supporter contributions
                     </CardDescription>
                   </CardHeader>
@@ -775,10 +701,10 @@ export default function EnhancedDashboardPage() {
                       {dashboardData.recentTips.map((tip) => (
                         <div
                           key={tip.id}
-                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
+                          className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                             tip.isHighlighted
-                              ? "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30"
-                              : "bg-white/5 border-white/10 hover:border-white/20"
+                              ? "bg-yellow-900/20 border-yellow-800"
+                              : "bg-gray-800 border-gray-700 hover:border-gray-600"
                           }`}
                         >
                           <div className="flex-1">
@@ -787,24 +713,24 @@ export default function EnhancedDashboardPage() {
                                 ${tip.amount.toFixed(2)}
                               </span>
                               <Badge
-                                className={`${
+                                className={
                                   tip.isHighlighted
-                                    ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                                    : "bg-white/10 text-white/80 border-white/20"
-                                }`}
+                                    ? "bg-yellow-900 text-yellow-400 border-yellow-800"
+                                    : "bg-gray-800 text-gray-300 border-gray-700"
+                                }
                               >
                                 {tip.tipperName}
                               </Badge>
                               {tip.isHighlighted && (
-                                <Star className="h-5 w-5 text-yellow-400 fill-current animate-pulse" />
+                                <Star className="h-5 w-5 text-yellow-400 fill-current" />
                               )}
                             </div>
                             {tip.message && (
-                              <p className="text-white/70 italic mb-2 text-sm">
+                              <p className="text-gray-400 italic mb-2 text-sm">
                                 "{tip.message}"
                               </p>
                             )}
-                            <p className="text-xs text-white/50">
+                            <p className="text-xs text-gray-500">
                               {new Date(tip.createdAt).toLocaleDateString(
                                 "en-US",
                                 {
@@ -829,63 +755,48 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="analytics" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Tips Over Time */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
                   <CardTitle className="text-white">Tips Over Time</CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Your earnings trend
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={dashboardData.tipsOverTime}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="rgba(255,255,255,0.1)"
-                      />
-                      <XAxis dataKey="date" stroke="rgba(255,255,255,0.7)" />
-                      <YAxis stroke="rgba(255,255,255,0.7)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="date" stroke="#9CA3AF" />
+                      <YAxis stroke="#9CA3AF" />
                       <Tooltip
-                        formatter={(value) => [`$${value}`, "Tips"]}
                         contentStyle={{
-                          backgroundColor: "rgba(0,0,0,0.8)",
-                          border: "1px solid rgba(255,255,255,0.2)",
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
                           borderRadius: "12px",
-                          color: "white",
+                          color: "#ffffff",
                         }}
+                        formatter={(value) => [`$${value}`, "Tips"]}
                       />
                       <Line
                         type="monotone"
                         dataKey="amount"
-                        stroke="url(#gradient)"
+                        stroke="#6B7280"
                         strokeWidth={3}
-                        dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, fill: "#ec4899" }}
+                        dot={{ fill: "#6B7280", strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: "#9CA3AF" }}
                       />
-                      <defs>
-                        <linearGradient
-                          id="gradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="100%"
-                          y2="0%"
-                        >
-                          <stop offset="0%" stopColor="#8b5cf6" />
-                          <stop offset="100%" stopColor="#ec4899" />
-                        </linearGradient>
-                      </defs>
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
               {/* Geographic Distribution */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Geographic Distribution
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Where your supporters are from
                   </CardDescription>
                 </CardHeader>
@@ -894,30 +805,27 @@ export default function EnhancedDashboardPage() {
                     {dashboardData.geographicData.map((country, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 group"
+                        className="flex items-center justify-between p-3 bg-gray-800 rounded-xl"
                       >
                         <div className="flex items-center space-x-4">
                           <div
-                            className="w-4 h-4 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
+                            className="w-4 h-4 rounded-full"
                             style={{ backgroundColor: country.color }}
                           ></div>
-                          <span className="text-white/90 font-medium">
+                          <span className="text-gray-300 font-medium">
                             {country.country}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-24 bg-white/10 rounded-full h-2 overflow-hidden">
+                        <div className="text-right">
+                          <p className="font-semibold text-white">
+                            {country.percentage}%
+                          </p>
+                          <div className="w-16 bg-gray-700 rounded-full h-2 mt-1">
                             <div
-                              className="h-2 rounded-full transition-all duration-500"
-                              style={{
-                                width: `${country.percentage}%`,
-                                backgroundColor: country.color,
-                              }}
+                              className="bg-gray-500 h-2 rounded-full"
+                              style={{ width: `${country.percentage}%` }}
                             ></div>
                           </div>
-                          <span className="text-white/70 w-10 text-right font-medium">
-                            {country.percentage}%
-                          </span>
                         </div>
                       </div>
                     ))}
@@ -929,15 +837,13 @@ export default function EnhancedDashboardPage() {
 
           {/* Transactions Tab */}
           <TabsContent value="transactions" className="space-y-8">
-            <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+            <Card className="bg-gray-900 border-gray-800">
               <CardHeader>
-                <CardTitle className="flex items-center text-xl">
-                  <WalletIcon className="h-6 w-6 mr-3 text-blue-400" />
-                  <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                    Transaction History
-                  </span>
+                <CardTitle className="flex items-center text-xl text-white">
+                  <WalletIcon className="h-6 w-6 mr-3 text-gray-400" />
+                  Transaction History
                 </CardTitle>
-                <CardDescription className="text-white/70">
+                <CardDescription className="text-gray-400">
                   All your tips and withdrawals
                 </CardDescription>
               </CardHeader>
@@ -946,27 +852,21 @@ export default function EnhancedDashboardPage() {
                   {dashboardData.recentTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 group"
+                      className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-700"
                     >
                       <div className="flex items-center space-x-4">
-                        <div
-                          className={`flex h-12 w-12 items-center justify-center rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300 ${
-                            transaction.type === "tip_received"
-                              ? "bg-gradient-to-r from-green-500 to-emerald-500"
-                              : "bg-gradient-to-r from-blue-500 to-cyan-500"
-                          }`}
-                        >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700">
                           {transaction.type === "tip_received" ? (
-                            <ArrowDownLeft className="h-5 w-5 text-white" />
+                            <ArrowDownLeft className="h-5 w-5 text-gray-300" />
                           ) : (
-                            <ArrowUpRight className="h-5 w-5 text-white" />
+                            <ArrowUpRight className="h-5 w-5 text-gray-300" />
                           )}
                         </div>
                         <div>
                           <p className="font-medium text-white">
                             {transaction.description}
                           </p>
-                          <p className="text-xs text-white/60">
+                          <p className="text-xs text-gray-400">
                             {new Date(transaction.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -980,22 +880,16 @@ export default function EnhancedDashboardPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p
-                          className={`font-semibold text-lg ${
-                            transaction.type === "tip_received"
-                              ? "text-green-400"
-                              : "text-blue-400"
-                          }`}
-                        >
+                        <p className="font-semibold text-lg text-white">
                           {transaction.type === "tip_received" ? "+" : "-"}$
                           {transaction.amount.toFixed(2)}
                         </p>
                         <Badge
-                          className={`${
+                          className={
                             transaction.status === "completed"
-                              ? "bg-green-500/20 text-green-300 border-green-500/30"
-                              : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                          }`}
+                              ? "bg-green-900 text-green-400 border-green-800"
+                              : "bg-yellow-900 text-yellow-400 border-yellow-800"
+                          }
                         >
                           {transaction.status}
                         </Badge>
@@ -1011,15 +905,13 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="community" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Top Tippers */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <Trophy className="h-6 w-6 mr-3 text-yellow-400" />
-                    <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                      Top Supporters
-                    </span>
+                  <CardTitle className="flex items-center text-xl text-white">
+                    <Star className="h-6 w-6 mr-3 text-gray-400" />
+                    Top Supporters
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Your most generous supporters
                   </CardDescription>
                 </CardHeader>
@@ -1028,17 +920,17 @@ export default function EnhancedDashboardPage() {
                     {dashboardData.topTippers.map((tipper, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 group"
+                        className="flex items-center justify-between p-4 bg-gray-800 rounded-xl"
                       >
                         <div className="flex items-center space-x-4">
-                          <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full text-white text-lg font-bold">
                             {index + 1}
                           </div>
                           <div>
                             <p className="font-medium text-white">
                               {tipper.name}
                             </p>
-                            <p className="text-xs text-white/60">
+                            <p className="text-xs text-gray-400">
                               {tipper.tipCount} tips
                             </p>
                           </div>
@@ -1048,15 +940,7 @@ export default function EnhancedDashboardPage() {
                             ${tipper.amount.toFixed(2)}
                           </p>
                           {tipper.badge && (
-                            <Badge
-                              className={`text-xs ${
-                                tipper.badge === "Gold"
-                                  ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                                  : tipper.badge === "Silver"
-                                  ? "bg-gray-500/20 text-gray-300 border-gray-500/30"
-                                  : "bg-orange-500/20 text-orange-300 border-orange-500/30"
-                              }`}
-                            >
+                            <Badge className="text-xs bg-gray-700 text-gray-300 border-gray-600">
                               {tipper.badge}
                             </Badge>
                           )}
@@ -1068,15 +952,13 @@ export default function EnhancedDashboardPage() {
               </Card>
 
               {/* Recent Messages */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <MessageCircle className="h-6 w-6 mr-3 text-blue-400" />
-                    <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                      Recent Messages
-                    </span>
+                  <CardTitle className="flex items-center text-xl text-white">
+                    <MessageCircle className="h-6 w-6 mr-3 text-gray-400" />
+                    Recent Messages
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Messages from your supporters
                   </CardDescription>
                 </CardHeader>
@@ -1087,16 +969,14 @@ export default function EnhancedDashboardPage() {
                       .map((tip) => (
                         <div
                           key={tip.id}
-                          className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border-l-4 border-blue-500 hover:border-purple-500 transition-all duration-300 group"
+                          className="p-4 bg-gray-800 rounded-xl border-l-4 border-gray-600"
                         >
-                          <p className="text-white/90 italic mb-3 leading-relaxed">
+                          <p className="text-gray-300 italic mb-3 leading-relaxed">
                             "{tip.message}"
                           </p>
-                          <div className="flex justify-between items-center text-xs text-white/60">
-                            <span className="group-hover:text-white/80 transition-colors duration-300">
-                              — {tip.tipperName}
-                            </span>
-                            <span className="group-hover:text-white/80 transition-colors duration-300">
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>— {tip.tipperName}</span>
+                            <span>
                               {new Date(tip.createdAt).toLocaleDateString(
                                 "en-US",
                                 {
@@ -1118,71 +998,53 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="sharing" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Sharing Tools */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <Share2 className="h-6 w-6 mr-3 text-green-400" />
-                    <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                      Sharing Tools
-                    </span>
+                  <CardTitle className="flex items-center text-xl text-white">
+                    <Share2 className="h-6 w-6 mr-3 text-gray-400" />
+                    Sharing Tools
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Promote your tip page across platforms
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                      <Button
-                        variant="outline"
-                        onClick={copyTipLink}
-                        className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-12"
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Link
-                      </Button>
-                    </div>
-                    <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          /* generateQRCode() */
-                        }}
-                        className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-12"
-                      >
-                        <QrCode className="h-4 w-4 mr-2" />
-                        QR Code
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
                     <Button
                       variant="outline"
-                      onClick={() => {
-                        /* getEmbedCode() */
-                      }}
-                      className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-12"
+                      onClick={copyTipLink}
+                      className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
                     >
-                      <Code className="h-4 w-4 mr-2" />
-                      Get Embed Code
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
+                    >
+                      <QrCode className="h-4 w-4 mr-2" />
+                      QR Code
                     </Button>
                   </div>
 
+                  <Button
+                    variant="outline"
+                    className="w-full bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
+                  >
+                    <Code className="h-4 w-4 mr-2" />
+                    Get Embed Code
+                  </Button>
+
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/90">
+                    <label className="text-sm font-medium text-gray-300">
                       Platform-Specific Shares
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         {
                           name: "Twitter",
-                          color: "from-blue-500 to-blue-600",
                           action: () => {
-                            const text = `Check out my tip page: https://tiptag.com/tip/${dashboardData.user.tipTag}`;
+                            const text = `Check out my tip page: https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
                             window.open(
                               `https://twitter.com/intent/tweet?text=${encodeURIComponent(
                                 text
@@ -1192,9 +1054,8 @@ export default function EnhancedDashboardPage() {
                         },
                         {
                           name: "Facebook",
-                          color: "from-blue-600 to-blue-700",
                           action: () => {
-                            const text = `Check out my tip page: https://tiptag.com/tip/${dashboardData.user.tipTag}`;
+                            const text = `Check out my tip page: https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
                             window.open(
                               `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
                                 text
@@ -1202,30 +1063,18 @@ export default function EnhancedDashboardPage() {
                             );
                           },
                         },
-                        {
-                          name: "Instagram",
-                          color: "from-pink-500 to-rose-600",
-                          action: () => {},
-                        },
-                        {
-                          name: "Discord",
-                          color: "from-indigo-500 to-purple-600",
-                          action: () => {},
-                        },
+                        { name: "Instagram", action: () => {} },
+                        { name: "Discord", action: () => {} },
                       ].map((platform) => (
-                        <div key={platform.name} className="relative group">
-                          <div
-                            className={`absolute -inset-1 bg-gradient-to-r ${platform.color} rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300`}
-                          ></div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={platform.action}
-                            className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-xl"
-                          >
-                            {platform.name}
-                          </Button>
-                        </div>
+                        <Button
+                          key={platform.name}
+                          variant="outline"
+                          size="sm"
+                          onClick={platform.action}
+                          className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
+                        >
+                          {platform.name}
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -1233,15 +1082,13 @@ export default function EnhancedDashboardPage() {
               </Card>
 
               {/* Stream Integration */}
-              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+              <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <Zap className="h-6 w-6 mr-3 text-purple-400" />
-                    <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      Stream Integration
-                    </span>
+                  <CardTitle className="flex items-center text-xl text-white">
+                    <Zap className="h-6 w-6 mr-3 text-gray-400" />
+                    Stream Integration
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-gray-400">
                     Connect with streaming platforms
                   </CardDescription>
                 </CardHeader>
@@ -1250,49 +1097,32 @@ export default function EnhancedDashboardPage() {
                     {
                       title: "Streamlabs Integration",
                       description: "Show tip alerts during your streams",
-                      color: "from-purple-500/10 to-pink-500/10",
-                      borderColor: "border-purple-500/30",
-                      buttonColor: "from-purple-600 to-pink-600",
                       action: "Connect Streamlabs",
                     },
                     {
                       title: "OBS Integration",
                       description: "Add tip notifications to your scenes",
-                      color: "from-blue-500/10 to-cyan-500/10",
-                      borderColor: "border-blue-500/30",
-                      buttonColor: "from-blue-600 to-cyan-600",
                       action: "Get OBS Code",
                     },
                     {
                       title: "Custom Webhook",
                       description: "Send tips to any service via webhook",
-                      color: "from-green-500/10 to-emerald-500/10",
-                      borderColor: "border-green-500/30",
-                      buttonColor: "from-green-600 to-emerald-600",
                       action: "Setup Webhook",
                     },
                   ].map((integration, index) => (
-                    <div
-                      key={index}
-                      className={`p-6 bg-gradient-to-r ${integration.color} rounded-2xl border ${integration.borderColor} hover:scale-105 transition-all duration-300 group`}
-                    >
+                    <div key={index} className="p-6 bg-gray-800 rounded-xl">
                       <h4 className="font-medium mb-2 text-white">
                         {integration.title}
                       </h4>
-                      <p className="text-white/70 mb-4 text-sm leading-relaxed">
+                      <p className="text-gray-400 mb-4 text-sm leading-relaxed">
                         {integration.description}
                       </p>
-                      <div className="relative">
-                        <div
-                          className={`absolute -inset-1 bg-gradient-to-r ${integration.buttonColor} rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300`}
-                        ></div>
-                        <Button
-                          size="sm"
-                          className={`relative bg-gradient-to-r ${integration.buttonColor} hover:scale-105 text-white rounded-xl transition-all duration-300 border-0`}
-                        >
-                          {integration.action}
-                        </Button>
-                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-gray-700 hover:bg-gray-600 text-white"
+                      >
+                        {integration.action}
+                      </Button>
                     </div>
                   ))}
                 </CardContent>

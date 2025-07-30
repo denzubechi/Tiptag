@@ -142,7 +142,7 @@ export default function TipPage() {
       const paymentResult = await pay({
         amount: tipAmount.toFixed(2),
         to: creator.walletAddress,
-        testnet: process.env.NODE_ENV !== "production",
+        testnet: true,
         payerInfo: {
           requests: [
             { type: "email", optional: true },

@@ -210,23 +210,23 @@ export default function WalletPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
+        return "bg-green-900 text-green-400 border-green-800";
       case "pending":
       case "processing":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+        return "bg-yellow-900 text-yellow-400 border-yellow-800";
       case "failed":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
+        return "bg-red-900 text-red-400 border-red-800";
       default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+        return "bg-gray-800 text-gray-400 border-gray-700";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-400 mx-auto mb-4" />
-          <p className="text-white/70">Loading wallet data...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-400">Loading wallet data...</p>
         </div>
       </div>
     );
@@ -234,12 +234,12 @@ export default function WalletPage() {
 
   if (!walletData) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">Failed to load wallet data</p>
           <Button
             onClick={fetchWalletData}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-gray-800 hover:bg-gray-700 border-gray-700"
           >
             Retry
           </Button>
@@ -249,43 +249,36 @@ export default function WalletPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
-      </div>
-
+    <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
-      <header className="relative z-50 border-b border-white/10 backdrop-blur-xl bg-black/50">
+      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Link href="/dashboard">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white/80 hover:text-white hover:bg-white/10"
+                className="text-gray-400 hover:text-white hover:bg-gray-800"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
             <div className="flex items-center space-x-2">
-              <Wallet className="h-6 w-6 text-green-400" />
-              <span className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              <Wallet className="h-6 w-6 text-gray-400" />
+              <span className="text-xl font-semibold text-white">
                 Wallet & Withdrawals
               </span>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             {isConnected ? (
-              <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+              <Badge className="bg-green-900 text-green-400 border-green-800">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Connected
               </Badge>
             ) : (
-              <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
+              <Badge className="bg-yellow-900 text-yellow-400 border-yellow-800">
                 <Clock className="h-3 w-3 mr-1" />
                 Not Connected
               </Badge>
@@ -294,61 +287,61 @@ export default function WalletPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8 max-w-6xl relative z-10">
+      <div className="container mx-auto px-6 py-8 max-w-6xl">
         {/* Balance Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-xl border-green-500/30 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-300/80">Total Balance</p>
+                  <p className="text-sm text-gray-400">Total Balance</p>
                   <p className="text-3xl font-bold text-white">
                     ${walletData.totalBalance.toFixed(2)}
                   </p>
                 </div>
-                <DollarSign className="h-8 w-8 text-green-400/80" />
+                <DollarSign className="h-8 w-8 text-gray-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl border-blue-500/30 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-300/80">Available</p>
+                  <p className="text-sm text-gray-400">Available</p>
                   <p className="text-3xl font-bold text-white">
                     ${walletData.availableBalance.toFixed(2)}
                   </p>
                 </div>
-                <ArrowUpRight className="h-8 w-8 text-blue-400/80" />
+                <ArrowUpRight className="h-8 w-8 text-gray-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 backdrop-blur-xl border-yellow-500/30 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-yellow-300/80">Pending</p>
+                  <p className="text-sm text-gray-400">Pending</p>
                   <p className="text-3xl font-bold text-white">
                     ${walletData.pendingBalance.toFixed(2)}
                   </p>
                 </div>
-                <Clock className="h-8 w-8 text-yellow-400/80" />
+                <Clock className="h-8 w-8 text-gray-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-xl border-purple-500/30 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-300/80">Withdrawn</p>
+                  <p className="text-sm text-gray-400">Withdrawn</p>
                   <p className="text-3xl font-bold text-white">
                     ${walletData.totalWithdrawn.toFixed(2)}
                   </p>
                 </div>
-                <ArrowDownLeft className="h-8 w-8 text-purple-400/80" />
+                <ArrowDownLeft className="h-8 w-8 text-gray-500" />
               </div>
             </CardContent>
           </Card>
@@ -356,22 +349,22 @@ export default function WalletPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Withdrawal Form */}
-          <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardHeader>
               <CardTitle className="flex items-center text-white">
-                <ArrowDownLeft className="h-5 w-5 mr-2 text-green-400" />
+                <ArrowDownLeft className="h-5 w-5 mr-2 text-gray-400" />
                 Withdraw Funds
               </CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-gray-400">
                 Transfer your earnings to your wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Wallet Connection Status */}
               {isConnected ? (
-                <Alert className="bg-green-500/10 border-green-500/30">
+                <Alert className="bg-green-900/20 border-green-800">
                   <CheckCircle className="h-4 w-4 text-green-400" />
-                  <AlertDescription className="text-green-300">
+                  <AlertDescription className="text-green-400">
                     Wallet connected: {address?.slice(0, 6)}...
                     {address?.slice(-4)}
                     {balance && (
@@ -384,9 +377,9 @@ export default function WalletPage() {
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert className="bg-yellow-500/10 border-yellow-500/30">
+                <Alert className="bg-yellow-900/20 border-yellow-800">
                   <Clock className="h-4 w-4 text-yellow-400" />
-                  <AlertDescription className="text-yellow-300">
+                  <AlertDescription className="text-yellow-400">
                     Connect your wallet for instant withdrawals, or enter a
                     wallet address for manual processing.
                   </AlertDescription>
@@ -394,11 +387,11 @@ export default function WalletPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="withdrawAmount" className="text-white/90">
+                <Label htmlFor="withdrawAmount" className="text-gray-300">
                   Amount to Withdraw
                 </Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
                     id="withdrawAmount"
                     type="number"
@@ -408,16 +401,16 @@ export default function WalletPage() {
                     placeholder="0.00"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-green-500"
+                    className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
                   />
                 </div>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-gray-500">
                   Available: ${walletData.availableBalance.toFixed(2)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="withdrawAddress" className="text-white/90">
+                <Label htmlFor="withdrawAddress" className="text-gray-300">
                   Wallet Address
                 </Label>
                 <Input
@@ -425,9 +418,9 @@ export default function WalletPage() {
                   placeholder="0x..."
                   value={withdrawAddress}
                   onChange={(e) => setWithdrawAddress(e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-green-500"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
                 />
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-gray-500">
                   Enter the wallet address where you want to receive your funds
                 </p>
               </div>
@@ -436,8 +429,8 @@ export default function WalletPage() {
                 <Alert
                   className={
                     withdrawalResult.type === "success"
-                      ? "bg-green-500/10 border-green-500/30"
-                      : "bg-red-500/10 border-red-500/30"
+                      ? "bg-green-900/20 border-green-800"
+                      : "bg-red-900/20 border-red-800"
                   }
                 >
                   {withdrawalResult.type === "success" ? (
@@ -448,8 +441,8 @@ export default function WalletPage() {
                   <AlertDescription
                     className={
                       withdrawalResult.type === "success"
-                        ? "text-green-300"
-                        : "text-red-300"
+                        ? "text-green-400"
+                        : "text-red-400"
                     }
                   >
                     {withdrawalResult.message}
@@ -457,45 +450,42 @@ export default function WalletPage() {
                 </Alert>
               )}
 
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                <Button
-                  onClick={handleWithdraw}
-                  disabled={
-                    withdrawing ||
-                    isPending ||
-                    isConfirming ||
-                    !withdrawAmount ||
-                    !withdrawAddress
-                  }
-                  className="relative w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-2xl h-12 transition-all duration-300 transform hover:scale-105"
-                >
-                  {withdrawing || isPending || isConfirming ? (
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  ) : (
-                    <ArrowDownLeft className="h-5 w-5 mr-2" />
-                  )}
-                  {withdrawing || isPending
-                    ? "Processing..."
-                    : isConfirming
-                    ? "Confirming..."
-                    : "Withdraw Funds"}
-                </Button>
-              </div>
+              <Button
+                onClick={handleWithdraw}
+                disabled={
+                  withdrawing ||
+                  isPending ||
+                  isConfirming ||
+                  !withdrawAmount ||
+                  !withdrawAddress
+                }
+                className="w-full bg-gray-800 hover:bg-gray-700 text-white h-12"
+              >
+                {withdrawing || isPending || isConfirming ? (
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                ) : (
+                  <ArrowDownLeft className="h-5 w-5 mr-2" />
+                )}
+                {withdrawing || isPending
+                  ? "Processing..."
+                  : isConfirming
+                  ? "Confirming..."
+                  : "Withdraw Funds"}
+              </Button>
 
               {error && (
-                <Alert className="bg-red-500/10 border-red-500/30">
+                <Alert className="bg-red-900/20 border-red-800">
                   <XCircle className="h-4 w-4 text-red-400" />
-                  <AlertDescription className="text-red-300">
+                  <AlertDescription className="text-red-400">
                     Transaction failed: {error.message}
                   </AlertDescription>
                 </Alert>
               )}
 
               {isConfirmed && (
-                <Alert className="bg-green-500/10 border-green-500/30">
+                <Alert className="bg-green-900/20 border-green-800">
                   <CheckCircle className="h-4 w-4 text-green-400" />
-                  <AlertDescription className="text-green-300">
+                  <AlertDescription className="text-green-400">
                     Transaction confirmed! Your withdrawal has been processed.
                   </AlertDescription>
                 </Alert>
@@ -504,10 +494,10 @@ export default function WalletPage() {
           </Card>
 
           {/* Recent Transactions */}
-          <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+          <Card className="bg-gray-900 border-gray-800">
             <CardHeader>
               <CardTitle className="text-white">Recent Transactions</CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-gray-400">
                 Your latest wallet activity
               </CardDescription>
             </CardHeader>
@@ -517,23 +507,23 @@ export default function WalletPage() {
                   walletData.recentTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+                      className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-700"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/10">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700">
                           {transaction.type === "tip_received" ? (
-                            <ArrowUpRight className="h-5 w-5 text-green-400" />
+                            <ArrowUpRight className="h-5 w-5 text-gray-300" />
                           ) : transaction.type === "withdrawal" ? (
-                            <ArrowDownLeft className="h-5 w-5 text-blue-400" />
+                            <ArrowDownLeft className="h-5 w-5 text-gray-300" />
                           ) : (
-                            <DollarSign className="h-5 w-5 text-purple-400" />
+                            <DollarSign className="h-5 w-5 text-gray-300" />
                           )}
                         </div>
                         <div>
                           <p className="font-medium text-white">
                             {transaction.description}
                           </p>
-                          <p className="text-sm text-white/60">
+                          <p className="text-sm text-gray-400">
                             {new Date(
                               transaction.createdAt
                             ).toLocaleDateString()}
@@ -542,13 +532,7 @@ export default function WalletPage() {
                       </div>
                       <div className="text-right">
                         <div className="flex items-center space-x-2">
-                          <span
-                            className={`font-bold ${
-                              transaction.type === "tip_received"
-                                ? "text-green-400"
-                                : "text-blue-400"
-                            }`}
-                          >
+                          <span className="font-bold text-white">
                             {transaction.type === "tip_received" ? "+" : "-"}$
                             {transaction.amount.toFixed(2)}
                           </span>
@@ -561,7 +545,7 @@ export default function WalletPage() {
                             onClick={() =>
                               copyToClipboard(transaction.transactionHash!)
                             }
-                            className="text-xs text-white/50 hover:text-white/80 p-0 h-auto"
+                            className="text-xs text-gray-500 hover:text-gray-400 p-0 h-auto"
                           >
                             <Copy className="h-3 w-3 mr-1" />
                             Copy Hash
@@ -572,9 +556,9 @@ export default function WalletPage() {
                   ))
                 ) : (
                   <div className="text-center py-8">
-                    <Wallet className="h-16 w-16 text-white/20 mx-auto mb-4" />
-                    <p className="text-white/60">No transactions yet</p>
-                    <p className="text-white/40 text-sm">
+                    <Wallet className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No transactions yet</p>
+                    <p className="text-gray-500 text-sm">
                       Your wallet activity will appear here
                     </p>
                   </div>
@@ -585,10 +569,10 @@ export default function WalletPage() {
         </div>
 
         {/* Withdrawal History */}
-        <Card className="mt-8 bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+        <Card className="mt-8 bg-gray-900 border-gray-800">
           <CardHeader>
             <CardTitle className="text-white">Withdrawal History</CardTitle>
-            <CardDescription className="text-white/60">
+            <CardDescription className="text-gray-400">
               Track all your withdrawal requests
             </CardDescription>
           </CardHeader>
@@ -598,21 +582,21 @@ export default function WalletPage() {
                 walletData.withdrawals.map((withdrawal) => (
                   <div
                     key={withdrawal.id}
-                    className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10"
+                    className="flex items-center justify-between p-4 bg-gray-800 rounded-xl"
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20">
-                        <ArrowDownLeft className="h-6 w-6 text-blue-400" />
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-700">
+                        <ArrowDownLeft className="h-6 w-6 text-gray-300" />
                       </div>
                       <div>
                         <p className="font-medium text-white">
                           ${withdrawal.amount.toFixed(2)} Withdrawal
                         </p>
-                        <p className="text-sm text-white/60">
+                        <p className="text-sm text-gray-400">
                           To: {withdrawal.walletAddress.slice(0, 6)}...
                           {withdrawal.walletAddress.slice(-4)}
                         </p>
-                        <p className="text-xs text-white/50">
+                        <p className="text-xs text-gray-500">
                           {new Date(withdrawal.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -632,7 +616,7 @@ export default function WalletPage() {
                             onClick={() =>
                               copyToClipboard(withdrawal.transactionHash!)
                             }
-                            className="text-xs text-white/50 hover:text-white/80 p-1 h-auto"
+                            className="text-xs text-gray-500 hover:text-gray-400 p-1 h-auto"
                           >
                             <Copy className="h-3 w-3 mr-1" />
                             Hash
@@ -646,7 +630,7 @@ export default function WalletPage() {
                                 "_blank"
                               )
                             }
-                            className="text-xs text-white/50 hover:text-white/80 p-1 h-auto"
+                            className="text-xs text-gray-500 hover:text-gray-400 p-1 h-auto"
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             View
@@ -663,9 +647,9 @@ export default function WalletPage() {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <ArrowDownLeft className="h-16 w-16 text-white/20 mx-auto mb-4" />
-                  <p className="text-white/60">No withdrawals yet</p>
-                  <p className="text-white/40 text-sm">
+                  <ArrowDownLeft className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400">No withdrawals yet</p>
+                  <p className="text-gray-500 text-sm">
                     Your withdrawal history will appear here
                   </p>
                 </div>
