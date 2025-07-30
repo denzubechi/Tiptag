@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 import { requireAuth } from "@/lib/auth";
+export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
@@ -11,7 +12,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("timeRange") || "30d";
 
-    // Calculate date range
     const now = new Date();
     const startDate = new Date();
 
@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
         startDate.setDate(now.getDate() - 30);
     }
 
-    // Get user data
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -68,15 +67,52 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Calculate metrics
-    const totalRevenue = user.tips.reduce((sum, tip) => sum + tip.amount, 0);
-    const totalTips = user.tips.length;
+    const serializableTips = user.tips.map((tip) => ({
+      id: tip.id,
+      amount: tip.amount,
+      currency: tip.currency,
+      message: tip.message,
+      paymentStatus: tip.paymentStatus,
+      createdAt: tip.createdAt.toISOString(),
+    }));
+
+    const serializableGoals = user.goals.map((goal) => ({
+      id: goal.id,
+      title: goal.title,
+      targetAmount: goal.targetAmount,
+      currentAmount: goal.currentAmount,
+      isActive: goal.isActive,
+      createdAt: goal.createdAt.toISOString(),
+      completedAt: goal.completedAt ? goal.completedAt.toISOString() : null,
+    }));
+
+    const serializableLinks = user.links.map((link) => ({
+      id: link.id,
+      title: link.title,
+      url: link.url,
+      clicks: link.clicks,
+      isActive: link.isActive,
+      createdAt: link.createdAt.toISOString(),
+    }));
+
+    const serializableAnalytics = user.analytics.map((analytic) => ({
+      id: analytic.id,
+      date: analytic.date.toISOString(),
+      profileViews: analytic.profileViews,
+      tipPageViews: analytic.tipPageViews,
+    }));
+
+    const totalRevenue = serializableTips.reduce(
+      (sum, tip) => sum + tip.amount,
+      0
+    );
+    const totalTips = serializableTips.length;
     const profileViews =
-      user.analytics.reduce(
+      serializableAnalytics.reduce(
         (sum, analytics) => sum + analytics.profileViews,
         0
       ) || user.profileViews;
-    const tipPageViews = user.analytics.reduce(
+    const tipPageViews = serializableAnalytics.reduce(
       (sum, analytics) => sum + analytics.tipPageViews,
       0
     );
@@ -84,13 +120,11 @@ export async function GET(request: NextRequest) {
       profileViews > 0 ? (totalTips / profileViews) * 100 : 0;
     const averageTipAmount = totalTips > 0 ? totalRevenue / totalTips : 0;
 
-    // Calculate growth rates (mock for now - would need historical data)
-    const revenueGrowth = Math.random() * 40 - 10; // -10% to +30%
-    const viewsGrowth = Math.random() * 30 - 5; // -5% to +25%
-    const conversionGrowth = Math.random() * 20 - 5; // -5% to +15%
-    const tipAmountGrowth = Math.random() * 15 - 7.5; // -7.5% to +7.5%
+    const revenueGrowth = parseFloat((Math.random() * 40 - 10).toFixed(2));
+    const viewsGrowth = parseFloat((Math.random() * 30 - 5).toFixed(2));
+    const conversionGrowth = parseFloat((Math.random() * 20 - 5).toFixed(2));
+    const tipAmountGrowth = parseFloat((Math.random() * 15 - 7.5).toFixed(2));
 
-    // Generate tips over time data
     const tipsOverTime = [];
     const days =
       timeRange === "7d"
@@ -105,7 +139,7 @@ export async function GET(request: NextRequest) {
       const date = new Date();
       date.setDate(date.getDate() - i);
 
-      const dayTips = user.tips.filter((tip) => {
+      const dayTips = serializableTips.filter((tip) => {
         const tipDate = new Date(tip.createdAt);
         return tipDate.toDateString() === date.toDateString();
       });
@@ -114,14 +148,13 @@ export async function GET(request: NextRequest) {
         date: date.toISOString().split("T")[0],
         tips: dayTips.length,
         amount: dayTips.reduce((sum, tip) => sum + tip.amount, 0),
-        views: Math.floor(Math.random() * 100) + 50, // Mock data
+        views: Math.floor(Math.random() * 100) + 50,
       });
     }
 
-    // Generate hourly data
     const hourlyData = [];
     for (let hour = 0; hour < 24; hour++) {
-      const hourTips = user.tips.filter((tip) => {
+      const hourTips = serializableTips.filter((tip) => {
         const tipHour = new Date(tip.createdAt).getHours();
         return tipHour === hour;
       });
@@ -132,7 +165,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Mock referrer data (would come from analytics)
     const topReferrers = [
       {
         source: "Direct",
@@ -161,75 +193,75 @@ export async function GET(request: NextRequest) {
       },
     ];
 
-    // Mock device data
     const deviceData = [
       { name: "Mobile", value: 65, color: "#8b5cf6" },
       { name: "Desktop", value: 28, color: "#06b6d4" },
       { name: "Tablet", value: 7, color: "#10b981" },
     ];
 
-    // Mock geographic data
     const geographicData = [
       {
         country: "United States",
         flag: "🇺🇸",
         percentage: 45,
         tips: Math.floor(totalTips * 0.45),
-        amount: totalRevenue * 0.45,
+        amount: parseFloat((totalRevenue * 0.45).toFixed(2)),
       },
       {
         country: "Canada",
         flag: "🇨🇦",
         percentage: 20,
         tips: Math.floor(totalTips * 0.2),
-        amount: totalRevenue * 0.2,
+        amount: parseFloat((totalRevenue * 0.2).toFixed(2)),
       },
       {
         country: "United Kingdom",
         flag: "🇬🇧",
         percentage: 15,
         tips: Math.floor(totalTips * 0.15),
-        amount: totalRevenue * 0.15,
+        amount: parseFloat((totalRevenue * 0.15).toFixed(2)),
       },
       {
         country: "Germany",
         flag: "🇩🇪",
         percentage: 12,
         tips: Math.floor(totalTips * 0.12),
-        amount: totalRevenue * 0.12,
+        amount: parseFloat((totalRevenue * 0.12).toFixed(2)),
       },
       {
         country: "Australia",
         flag: "🇦🇺",
         percentage: 8,
         tips: Math.floor(totalTips * 0.08),
-        amount: totalRevenue * 0.08,
+        amount: parseFloat((totalRevenue * 0.08).toFixed(2)),
       },
     ];
 
-    // Top content performance
     const topContent = [
       {
         title: "Profile Page",
         views: profileViews,
         tips: totalTips,
-        conversion: conversionRate,
+        conversion: parseFloat(conversionRate.toFixed(2)),
       },
-      ...user.links.map((link) => ({
+      ...serializableLinks.map((link) => ({
         title: link.title,
         views: link.clicks,
-        tips: Math.floor(link.clicks * 0.05), // 5% conversion
+        tips: Math.floor(link.clicks * 0.05),
         conversion:
           link.clicks > 0
-            ? (Math.floor(link.clicks * 0.05) / link.clicks) * 100
+            ? parseFloat(
+                ((Math.floor(link.clicks * 0.05) / link.clicks) * 100).toFixed(
+                  2
+                )
+              )
             : 0,
       })),
     ]
       .sort((a, b) => b.conversion - a.conversion)
       .slice(0, 5);
 
-    // Goal performance
-    const goalPerformance = user.goals.map((goal) => ({
+    const goalPerformance = serializableGoals.map((goal) => ({
       id: goal.id,
       title: goal.title,
       targetAmount: goal.targetAmount,
@@ -240,15 +272,15 @@ export async function GET(request: NextRequest) {
           : goal.isActive
           ? "active"
           : "inactive",
-      completedAt: goal.completedAt?.toISOString(),
+      completedAt: goal.completedAt,
     }));
 
     const analyticsData = {
-      totalRevenue,
+      totalRevenue: parseFloat(totalRevenue.toFixed(2)),
       totalTips,
       profileViews,
-      conversionRate,
-      averageTipAmount,
+      conversionRate: parseFloat(conversionRate.toFixed(2)),
+      averageTipAmount: parseFloat(averageTipAmount.toFixed(2)),
       revenueGrowth,
       viewsGrowth,
       conversionGrowth,
@@ -266,7 +298,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Analytics fetch error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Internal server error",
+        details: (error as Error).message || "Unknown error",
+      },
       { status: 500 }
     );
   }

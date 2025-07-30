@@ -16,17 +16,17 @@ const PUBLIC_PATHS_EXACT = [
   "/talent",
   "community",
   "/privacy",
-  "/auth/login",
-  "/auth/register",
+  "/auth/signin",
+  "/auth/signup",
   "/auth/reset-password",
   "/auth/forgot-password",
 ];
 
-const PUBLIC_PATHS_DYNAMIC_PREFIXES = ["/bounties/", "/projects/"];
+const PUBLIC_PATHS_DYNAMIC_PREFIXES = ["/tip/", "/demo/"];
 
 const AUTH_PATHS = [
-  "/auth/login",
-  "/auth/register",
+  "/auth/signin",
+  "/auth/signup",
   "/auth/reset-password",
   "/auth/forgot-password",
 ];
@@ -70,7 +70,7 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     console.log("No token found for protected path, redirecting to login.");
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 
   try {
@@ -96,7 +96,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   } catch (err) {
     console.log("Invalid token for protected path, redirecting to login.");
-    const response = NextResponse.redirect(new URL("/auth/login", req.url));
+    const response = NextResponse.redirect(new URL("/auth/signin", req.url));
     response.cookies.delete("auth-token");
     return response;
   }
