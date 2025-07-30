@@ -157,10 +157,10 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-400">Loading analytics data...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-purple-400 mx-auto mb-4" />
+          <p className="text-white/70">Loading analytics data...</p>
         </div>
       </div>
     );
@@ -168,12 +168,12 @@ export default function AnalyticsPage() {
 
   if (!analyticsData) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">Failed to load analytics data</p>
           <Button
             onClick={fetchAnalyticsData}
-            className="bg-gray-800 hover:bg-gray-700 border-gray-700"
+            className="bg-purple-600 hover:bg-purple-700"
           >
             Retry
           </Button>
@@ -183,34 +183,41 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-bounce" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
+      <header className="relative z-50 border-b border-white/10 backdrop-blur-xl bg-black/50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Link href="/dashboard">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-white hover:bg-gray-800"
+                className="text-white/80 hover:text-white hover:bg-white/10"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
             <div className="flex items-center space-x-2">
-              <BarChart3 className="h-6 w-6 text-gray-400" />
-              <span className="text-xl font-semibold text-white">
+              <BarChart3 className="h-6 w-6 text-purple-400" />
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Advanced Analytics
               </span>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-32 bg-gray-900 border-gray-800 text-white">
+              <SelectTrigger className="w-32 bg-white/5 border-white/20 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-800">
+              <SelectContent className="bg-gray-900 border-white/20">
                 <SelectItem value="7d">Last 7 days</SelectItem>
                 <SelectItem value="30d">Last 30 days</SelectItem>
                 <SelectItem value="90d">Last 90 days</SelectItem>
@@ -221,7 +228,7 @@ export default function AnalyticsPage() {
               variant="outline"
               size="sm"
               onClick={exportData}
-              className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
+              className="text-white/80 border-white/20 hover:bg-white/10 bg-transparent"
             >
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -230,14 +237,14 @@ export default function AnalyticsPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-xl border-purple-500/30 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Total Revenue</p>
+                  <p className="text-sm text-purple-300/80">Total Revenue</p>
                   <p className="text-3xl font-bold text-white">
                     ${analyticsData.totalRevenue.toFixed(2)}
                   </p>
@@ -259,16 +266,16 @@ export default function AnalyticsPage() {
                     </span>
                   </div>
                 </div>
-                <DollarSign className="h-8 w-8 text-gray-500" />
+                <DollarSign className="h-8 w-8 text-purple-400/80" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl border-blue-500/30 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Profile Views</p>
+                  <p className="text-sm text-blue-300/80">Profile Views</p>
                   <p className="text-3xl font-bold text-white">
                     {analyticsData.profileViews.toLocaleString()}
                   </p>
@@ -290,16 +297,16 @@ export default function AnalyticsPage() {
                     </span>
                   </div>
                 </div>
-                <Eye className="h-8 w-8 text-gray-500" />
+                <Eye className="h-8 w-8 text-blue-400/80" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-xl border-green-500/30 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Conversion Rate</p>
+                  <p className="text-sm text-green-300/80">Conversion Rate</p>
                   <p className="text-3xl font-bold text-white">
                     {analyticsData.conversionRate.toFixed(1)}%
                   </p>
@@ -322,16 +329,16 @@ export default function AnalyticsPage() {
                     </span>
                   </div>
                 </div>
-                <Target className="h-8 w-8 text-gray-500" />
+                <Target className="h-8 w-8 text-green-400/80" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-gradient-to-r from-orange-500/10 to-red-500/10 backdrop-blur-xl border-orange-500/30 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Avg. Tip Amount</p>
+                  <p className="text-sm text-orange-300/80">Avg. Tip Amount</p>
                   <p className="text-3xl font-bold text-white">
                     ${analyticsData.averageTipAmount.toFixed(2)}
                   </p>
@@ -353,7 +360,7 @@ export default function AnalyticsPage() {
                     </span>
                   </div>
                 </div>
-                <Heart className="h-8 w-8 text-gray-500" />
+                <Heart className="h-8 w-8 text-orange-400/80" />
               </div>
             </CardContent>
           </Card>
@@ -361,34 +368,34 @@ export default function AnalyticsPage() {
 
         {/* Main Analytics Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-900 border-gray-800">
+          <TabsList className="grid w-full grid-cols-5 bg-white/5 backdrop-blur-sm border border-white/10">
             <TabsTrigger
               value="overview"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-white/70"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="audience"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-white/70"
             >
               Audience
             </TabsTrigger>
             <TabsTrigger
               value="content"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-white/70"
             >
               Content
             </TabsTrigger>
             <TabsTrigger
               value="geography"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-white/70"
             >
               Geography
             </TabsTrigger>
             <TabsTrigger
               value="goals"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+              className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-white/70"
             >
               Goals
             </TabsTrigger>
@@ -398,22 +405,22 @@ export default function AnalyticsPage() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Revenue Trend */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">Revenue Trend</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     Tips received over time
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={analyticsData.tipsOverTime}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="date" stroke="#9CA3AF" />
-                      <YAxis stroke="#9CA3AF" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                      <XAxis dataKey="date" stroke="#ffffff60" />
+                      <YAxis stroke="#ffffff60" />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "#1F2937",
+                          backgroundColor: "#1f2937",
                           border: "1px solid #374151",
                           borderRadius: "8px",
                           color: "#ffffff",
@@ -426,8 +433,8 @@ export default function AnalyticsPage() {
                       <Area
                         type="monotone"
                         dataKey="amount"
-                        stroke="#6B7280"
-                        fill="#6B7280"
+                        stroke="#8b5cf6"
+                        fill="#8b5cf6"
                         fillOpacity={0.3}
                         strokeWidth={2}
                       />
@@ -437,45 +444,45 @@ export default function AnalyticsPage() {
               </Card>
 
               {/* Conversion Funnel */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Conversion Funnel
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     How visitors become tippers
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl">
-                      <span className="font-medium text-gray-300">
+                    <div className="flex items-center justify-between p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                      <span className="font-medium text-blue-300">
                         Profile Views
                       </span>
-                      <span className="text-2xl font-bold text-white">
+                      <span className="text-2xl font-bold text-blue-400">
                         {analyticsData.profileViews.toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl">
-                      <span className="font-medium text-gray-300">
+                    <div className="flex items-center justify-between p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                      <span className="font-medium text-purple-300">
                         Tip Page Views
                       </span>
-                      <span className="text-2xl font-bold text-white">
+                      <span className="text-2xl font-bold text-purple-400">
                         {Math.round(
                           analyticsData.profileViews * 0.26
                         ).toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl">
-                      <span className="font-medium text-gray-300">
+                    <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-xl border border-green-500/20">
+                      <span className="font-medium text-green-300">
                         Tips Completed
                       </span>
-                      <span className="text-2xl font-bold text-white">
+                      <span className="text-2xl font-bold text-green-400">
                         {analyticsData.totalTips}
                       </span>
                     </div>
                     <div className="text-center pt-4">
-                      <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
+                      <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2">
                         Overall Conversion:{" "}
                         {analyticsData.conversionRate.toFixed(1)}%
                       </Badge>
@@ -485,24 +492,24 @@ export default function AnalyticsPage() {
               </Card>
 
               {/* Peak Hours */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Peak Tipping Hours
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     When your audience is most active
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={analyticsData.hourlyData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="hour" stroke="#9CA3AF" />
-                      <YAxis stroke="#9CA3AF" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                      <XAxis dataKey="hour" stroke="#ffffff60" />
+                      <YAxis stroke="#ffffff60" />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "#1F2937",
+                          backgroundColor: "#1f2937",
                           border: "1px solid #374151",
                           borderRadius: "8px",
                           color: "#ffffff",
@@ -510,7 +517,7 @@ export default function AnalyticsPage() {
                       />
                       <Bar
                         dataKey="tips"
-                        fill="#6B7280"
+                        fill="#06b6d4"
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
@@ -519,10 +526,10 @@ export default function AnalyticsPage() {
               </Card>
 
               {/* Device Breakdown */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">Device Usage</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     How supporters access your page
                   </CardDescription>
                 </CardHeader>
@@ -545,7 +552,7 @@ export default function AnalyticsPage() {
                         </Pie>
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#1F2937",
+                            backgroundColor: "#1f2937",
                             border: "1px solid #374151",
                             borderRadius: "8px",
                             color: "#ffffff",
@@ -569,7 +576,7 @@ export default function AnalyticsPage() {
                             {device.name}
                           </span>
                         </div>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-white/60">
                           {device.value}%
                         </span>
                       </div>
@@ -584,10 +591,10 @@ export default function AnalyticsPage() {
           <TabsContent value="audience" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Traffic Sources */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">Traffic Sources</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     Where your visitors come from
                   </CardDescription>
                 </CardHeader>
@@ -596,17 +603,17 @@ export default function AnalyticsPage() {
                     {analyticsData.topReferrers.map((source, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-800 rounded-xl"
+                        className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
                       >
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             {source.source[0]}
                           </div>
                           <div>
                             <p className="font-medium text-white">
                               {source.source}
                             </p>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm text-white/60">
                               {source.visitors} visitors
                             </p>
                           </div>
@@ -615,9 +622,9 @@ export default function AnalyticsPage() {
                           <p className="font-semibold text-white">
                             {source.percentage}%
                           </p>
-                          <div className="w-16 bg-gray-700 rounded-full h-2 mt-1">
+                          <div className="w-16 bg-white/20 rounded-full h-2 mt-1">
                             <div
-                              className="bg-gray-500 h-2 rounded-full"
+                              className="bg-purple-600 h-2 rounded-full"
                               style={{ width: `${source.percentage}%` }}
                             ></div>
                           </div>
@@ -629,12 +636,12 @@ export default function AnalyticsPage() {
               </Card>
 
               {/* Audience Insights */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Audience Insights
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     Key demographics and behavior
                   </CardDescription>
                 </CardHeader>
@@ -649,22 +656,22 @@ export default function AnalyticsPage() {
                           {
                             range: "18-24",
                             percentage: 25,
-                            color: "bg-gray-500",
+                            color: "bg-blue-500",
                           },
                           {
                             range: "25-34",
                             percentage: 40,
-                            color: "bg-gray-600",
+                            color: "bg-purple-500",
                           },
                           {
                             range: "35-44",
                             percentage: 20,
-                            color: "bg-gray-400",
+                            color: "bg-green-500",
                           },
                           {
                             range: "45+",
                             percentage: 15,
-                            color: "bg-gray-300",
+                            color: "bg-orange-500",
                           },
                         ].map((age, index) => (
                           <div
@@ -675,13 +682,13 @@ export default function AnalyticsPage() {
                               {age.range}
                             </span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-20 bg-gray-800 rounded-full h-2">
+                              <div className="w-20 bg-white/20 rounded-full h-2">
                                 <div
                                   className={`${age.color} h-2 rounded-full`}
                                   style={{ width: `${age.percentage}%` }}
                                 ></div>
                               </div>
-                              <span className="text-sm w-8 text-gray-400">
+                              <span className="text-sm w-8 text-white/60">
                                 {age.percentage}%
                               </span>
                             </div>
@@ -695,19 +702,19 @@ export default function AnalyticsPage() {
                         Engagement Metrics
                       </h4>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-3 bg-gray-800 rounded-xl">
-                          <div className="text-xl font-bold text-white">
+                        <div className="text-center p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                          <div className="text-xl font-bold text-blue-400">
                             2.4m
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-blue-300">
                             Avg. Session
                           </div>
                         </div>
-                        <div className="text-center p-3 bg-gray-800 rounded-xl">
-                          <div className="text-xl font-bold text-white">
+                        <div className="text-center p-3 bg-green-500/10 rounded-xl border border-green-500/20">
+                          <div className="text-xl font-bold text-green-400">
                             3.2
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-green-300">
                             Pages/Session
                           </div>
                         </div>
@@ -721,12 +728,12 @@ export default function AnalyticsPage() {
 
           {/* Content Tab */}
           <TabsContent value="content" className="space-y-6">
-            <Card className="bg-gray-900 border-gray-800">
+            <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
               <CardHeader>
                 <CardTitle className="text-white">
                   Top Performing Content
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-white/60">
                   Which parts of your profile drive the most engagement
                 </CardDescription>
               </CardHeader>
@@ -735,13 +742,13 @@ export default function AnalyticsPage() {
                   {analyticsData.topContent.map((content, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 bg-gray-800 rounded-xl hover:bg-gray-750 transition-colors"
+                      className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors group"
                     >
                       <div className="flex-1">
                         <h4 className="font-medium text-white">
                           {content.title}
                         </h4>
-                        <div className="flex items-center space-x-4 mt-1 text-sm text-gray-400">
+                        <div className="flex items-center space-x-4 mt-1 text-sm text-white/60">
                           <span className="flex items-center">
                             <Eye className="h-4 w-4 mr-1" />
                             {content.views} views
@@ -753,10 +760,10 @@ export default function AnalyticsPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-white">
+                        <div className="text-lg font-bold text-purple-400">
                           {content.conversion}%
                         </div>
-                        <div className="text-xs text-gray-500">conversion</div>
+                        <div className="text-xs text-white/50">conversion</div>
                       </div>
                     </div>
                   ))}
@@ -768,12 +775,12 @@ export default function AnalyticsPage() {
           {/* Geography Tab */}
           <TabsContent value="geography" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Geographic Distribution
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     Where your supporters are located
                   </CardDescription>
                 </CardHeader>
@@ -782,7 +789,7 @@ export default function AnalyticsPage() {
                     {analyticsData.geographicData.map((country, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-800 rounded-xl"
+                        className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"
                       >
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{country.flag}</span>
@@ -790,7 +797,7 @@ export default function AnalyticsPage() {
                             <p className="font-medium text-white">
                               {country.country}
                             </p>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm text-white/60">
                               ${country.amount.toFixed(2)} in tips
                             </p>
                           </div>
@@ -799,9 +806,9 @@ export default function AnalyticsPage() {
                           <p className="font-semibold text-white">
                             {country.percentage}%
                           </p>
-                          <div className="w-16 bg-gray-700 rounded-full h-2 mt-1">
+                          <div className="w-16 bg-white/20 rounded-full h-2 mt-1">
                             <div
-                              className="bg-gray-500 h-2 rounded-full"
+                              className="bg-purple-600 h-2 rounded-full"
                               style={{ width: `${country.percentage}%` }}
                             ></div>
                           </div>
@@ -812,12 +819,12 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">
                     Time Zone Analysis
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     When your global audience is active
                   </CardDescription>
                 </CardHeader>
@@ -850,21 +857,24 @@ export default function AnalyticsPage() {
                         percentage: 5,
                       },
                     ].map((tz, index) => (
-                      <div key={index} className="p-3 bg-gray-800 rounded-xl">
+                      <div
+                        key={index}
+                        className="p-3 bg-white/5 rounded-xl border border-white/10"
+                      >
                         <div className="flex justify-between items-center mb-2">
                           <span className="font-medium text-white">
                             {tz.timezone}
                           </span>
-                          <span className="text-sm text-gray-400">
+                          <span className="text-sm text-white/60">
                             {tz.percentage}%
                           </span>
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-white/60">
                           Peak: {tz.active}
                         </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                        <div className="w-full bg-white/20 rounded-full h-2 mt-2">
                           <div
-                            className="bg-gray-500 h-2 rounded-full"
+                            className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${tz.percentage}%` }}
                           ></div>
                         </div>
@@ -879,10 +889,10 @@ export default function AnalyticsPage() {
           {/* Goals Tab */}
           <TabsContent value="goals" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">Goal Performance</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     How your funding goals are performing
                   </CardDescription>
                 </CardHeader>
@@ -891,22 +901,22 @@ export default function AnalyticsPage() {
                     {analyticsData.goalPerformance.map((goal, index) => (
                       <div
                         key={goal.id}
-                        className={`p-4 rounded-xl ${
+                        className={`p-4 rounded-xl border ${
                           goal.status === "active"
-                            ? "bg-green-900/20 border border-green-800"
+                            ? "bg-green-500/10 border-green-500/30"
                             : goal.status === "completed"
-                            ? "bg-blue-900/20 border border-blue-800"
-                            : "bg-gray-800 border border-gray-700"
+                            ? "bg-blue-500/10 border-blue-500/30"
+                            : "bg-purple-500/10 border-purple-500/30"
                         }`}
                       >
                         <div className="flex justify-between items-center mb-2">
                           <h4
                             className={`font-semibold ${
                               goal.status === "active"
-                                ? "text-green-400"
+                                ? "text-green-300"
                                 : goal.status === "completed"
-                                ? "text-blue-400"
-                                : "text-white"
+                                ? "text-blue-300"
+                                : "text-purple-300"
                             }`}
                           >
                             {goal.title}
@@ -914,10 +924,10 @@ export default function AnalyticsPage() {
                           <Badge
                             className={
                               goal.status === "active"
-                                ? "bg-green-900 text-green-400 border-green-800"
+                                ? "bg-green-600 text-white"
                                 : goal.status === "completed"
-                                ? "bg-blue-900 text-blue-400 border-blue-800"
-                                : "bg-gray-800 text-gray-400 border-gray-700"
+                                ? "bg-blue-600 text-white"
+                                : "bg-purple-600 text-white"
                             }
                           >
                             {goal.status}
@@ -929,7 +939,7 @@ export default function AnalyticsPage() {
                               ? "text-green-400"
                               : goal.status === "completed"
                               ? "text-blue-400"
-                              : "text-white"
+                              : "text-purple-400"
                           }`}
                         >
                           ${goal.currentAmount.toFixed(2)} / $
@@ -938,10 +948,10 @@ export default function AnalyticsPage() {
                         <div
                           className={`text-sm ${
                             goal.status === "active"
-                              ? "text-green-400"
+                              ? "text-green-300"
                               : goal.status === "completed"
-                              ? "text-blue-400"
-                              : "text-gray-400"
+                              ? "text-blue-300"
+                              : "text-purple-300"
                           }`}
                         >
                           {goal.status === "completed" && goal.completedAt
@@ -958,30 +968,30 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-900 border-gray-800">
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-white">Goal Analytics</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/60">
                     Insights about your funding campaigns
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-gray-800 rounded-xl">
-                        <div className="text-2xl font-bold text-white">
+                      <div className="text-center p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+                        <div className="text-2xl font-bold text-purple-400">
                           {
                             analyticsData.goalPerformance.filter(
                               (g) => g.status === "completed"
                             ).length
                           }
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-purple-300">
                           Goals Completed
                         </div>
                       </div>
-                      <div className="text-center p-4 bg-gray-800 rounded-xl">
-                        <div className="text-2xl font-bold text-white">
+                      <div className="text-center p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20">
+                        <div className="text-2xl font-bold text-blue-400">
                           {analyticsData.goalPerformance.length > 0
                             ? Math.round(
                                 (analyticsData.goalPerformance.filter(
@@ -993,7 +1003,7 @@ export default function AnalyticsPage() {
                             : 0}
                           %
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-blue-300">
                           Success Rate
                         </div>
                       </div>
@@ -1029,11 +1039,11 @@ export default function AnalyticsPage() {
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-800">
+                    <div className="pt-4 border-t border-white/10">
                       <h4 className="font-medium mb-3 text-white">
                         Goal Impact
                       </h4>
-                      <div className="text-sm text-gray-400 space-y-1">
+                      <div className="text-sm text-white/60 space-y-1">
                         <p>• Goals increase tip frequency by 40%</p>
                         <p>• Average tip amount is 25% higher during goals</p>
                         <p>
