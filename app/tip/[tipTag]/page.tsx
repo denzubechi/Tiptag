@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -31,8 +30,11 @@ import {
   Zap,
   Star,
 } from "lucide-react";
-import { BasePayButton } from "@base-org/account-ui/react";
-import { pay, getPaymentStatus } from "@base-org/account";
+import {
+  BasePayButton,
+  SignInWithBaseButton,
+} from "@base-org/account-ui/react";
+import { pay, getPaymentStatus, createBaseAccountSDK } from "@base-org/account";
 
 interface Creator {
   id: string;
@@ -66,21 +68,34 @@ export default function TipPage() {
   const params = useParams();
   const tipTag = params.tipTag as string;
 
+  // Existing state
   const [creator, setCreator] = useState<Creator | null>(null);
   const [currentGoal, setCurrentGoal] = useState<TippingGoal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<any>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+
+  // New sign-in state
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [sdk, setSdk] = useState<any>(null);
+  const [userAddress, setUserAddress] = useState<string | null>(null);
+  const [nonce, setNonce] = useState<string | null>(null);
+
   const predefinedAmounts = [5, 10, 20, 50];
 
   useEffect(() => {
+    // Initialize SDK
+    const baseSDK = createBaseAccountSDK({
+      appName: "Tiptag - Creator Tips",
+    });
+    setSdk(baseSDK);
+
     fetchCreatorData();
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -93,11 +108,9 @@ export default function TipPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/creators/${tipTag}`);
-
       if (!response.ok) {
         throw new Error("Creator not found");
       }
-
       const data = await response.json();
       setCreator(data.creator);
       setCurrentGoal(data.currentGoal);
@@ -105,6 +118,50 @@ export default function TipPage() {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Sign-in handler
+  const handleSignIn = async () => {
+    try {
+      if (typeof window === "undefined") {
+        console.error("Window is not available");
+        return;
+      }
+
+      // Initialize Base Account SDK
+      const baseSDK = createBaseAccountSDK({
+        appName: "Tiptag - Creator Tips",
+      });
+
+      const generatedNonce = window.crypto.randomUUID().replace(/-/g, "");
+      const result = (await baseSDK.getProvider().request({
+        method: "wallet_connect",
+        params: [
+          {
+            version: "1",
+            capabilities: {
+              signInWithEthereum: {
+                nonce: generatedNonce,
+                chainId: "0x2105", // Base Mainnet - 8453
+              },
+            },
+          },
+        ],
+      })) as { accounts?: Array<{ address: string }> };
+
+      if (result?.accounts?.[0]) {
+        setIsSignedIn(true);
+        // You can add these state variables if needed:
+        setUserAddress(result.accounts[0].address);
+        setNonce(generatedNonce);
+      }
+    } catch (error) {
+      console.error("Sign in failed:", error);
+      setPaymentStatus({
+        type: "error",
+        message: "Sign in failed. Please try again.",
+      });
     }
   };
 
@@ -124,11 +181,20 @@ export default function TipPage() {
     if (customAmount) return Number.parseFloat(customAmount);
     return 0;
   };
+
   const handlePayment = async () => {
+    if (!isSignedIn) {
+      setPaymentStatus({
+        type: "error",
+        message: "Please sign in first to send a tip.",
+      });
+      return;
+    }
+
     setPaymentLoading(true);
     setPaymentStatus(null);
-
     const tipAmount = getTipAmount();
+
     if (tipAmount <= 0 || !creator?.walletAddress) {
       setPaymentStatus({
         type: "error",
@@ -142,8 +208,7 @@ export default function TipPage() {
       const paymentResult = await pay({
         amount: tipAmount.toFixed(2),
         to: creator.walletAddress,
-        testnet: false,
-
+        testnet: process.env.NODE_ENV !== "production",
         payerInfo: {
           requests: [
             { type: "email", optional: true },
@@ -156,7 +221,6 @@ export default function TipPage() {
       if (paymentResult.success) {
         const { id, payerInfoResponses } = paymentResult;
         setPaymentId(id || null);
-
         setPaymentStatus({
           type: "success",
           message: "Payment successful!",
@@ -222,6 +286,7 @@ export default function TipPage() {
       });
       return;
     }
+
     setPaymentLoading(true);
     try {
       const { status } = await getPaymentStatus({ id: paymentId });
@@ -291,7 +356,6 @@ export default function TipPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black to-blue-900/20" />
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
-
           {/* Celebration particles */}
           {[...Array(15)].map((_, i) => (
             <div
@@ -306,7 +370,6 @@ export default function TipPage() {
             />
           ))}
         </div>
-
         <Card className="w-full max-w-md text-center bg-white/5 backdrop-blur-xl border-white/20 relative z-10 shadow-2xl">
           <CardHeader>
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-2xl animate-pulse">
@@ -328,7 +391,6 @@ export default function TipPage() {
                 {creator.displayName}!
               </AlertDescription>
             </Alert>
-
             {paymentStatus.transactionHash && (
               <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                 <p className="text-sm text-white/60 mb-2">Transaction Hash:</p>
@@ -337,7 +399,6 @@ export default function TipPage() {
                 </code>
               </div>
             )}
-
             {paymentStatus.userInfo && (
               <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/30">
                 <p className="text-sm font-medium text-blue-300 mb-3">
@@ -360,7 +421,6 @@ export default function TipPage() {
                 </div>
               </div>
             )}
-
             <div className="flex items-center justify-center space-x-4 p-4 bg-white/5 rounded-xl">
               <Avatar className="h-16 w-16 ring-4 ring-purple-500/30">
                 <AvatarImage src={creator.avatarUrl || "/placeholder.svg"} />
@@ -384,7 +444,6 @@ export default function TipPage() {
                 </div>
               </div>
             </div>
-
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
               <Button
@@ -409,18 +468,6 @@ export default function TipPage() {
       }
     : {};
 
-  const paymentOptions = {
-    amount: getTipAmount().toString(),
-    to: creator.walletAddress,
-    testnet: process.env.NODE_ENV !== "production",
-    payerInfo: {
-      requests: [
-        { type: "email", optional: true },
-        { type: "name", optional: true },
-      ],
-    },
-  };
-
   return (
     <div
       className="min-h-screen bg-black text-white relative overflow-hidden p-4"
@@ -439,7 +486,6 @@ export default function TipPage() {
         />
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-pink-500/10 rounded-full blur-2xl animate-bounce" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-
         {/* Floating hearts */}
         {[...Array(10)].map((_, i) => (
           <Heart
@@ -488,19 +534,6 @@ export default function TipPage() {
                 <p className="text-white/80 leading-relaxed">{creator.bio}</p>
               </div>
             </div>
-
-            {/* <div className="flex items-center justify-center space-x-6 p-4 bg-white/5 rounded-2xl">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-5 w-5 text-red-400 animate-pulse" />
-                <span className="text-white/80">
-                  {creator.totalTipCount} tips received
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-yellow-400 animate-bounce" />
-                <span className="text-white/80">Active Creator</span>
-              </div>
-            </div> */}
           </CardContent>
         </Card>
 
@@ -518,7 +551,6 @@ export default function TipPage() {
               <p className="text-indigo-200/80 mb-6 leading-relaxed">
                 {currentGoal.description}
               </p>
-
               <div className="space-y-4">
                 <div className="relative">
                   <Progress
@@ -547,134 +579,206 @@ export default function TipPage() {
           </Card>
         )}
 
-        {/* Tip Form */}
-        <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-3 text-2xl">
-              <div className="relative">
-                <DollarSign className="h-8 w-8 text-green-400" />
-                <div className="absolute -inset-2 bg-green-500/20 rounded-full blur-lg animate-pulse" />
-              </div>
-              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                Send a Tip
-              </span>
-            </CardTitle>
-            <CardDescription className="text-white/70 text-lg">
-              Show your support with a financial tip. No account required - pay
-              with any wallet or card!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {/* Amount Selection */}
-            <div className="space-y-4">
-              <Label className="text-xl font-medium text-white/90">
-                Choose Amount
-              </Label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {predefinedAmounts.map((amount) => (
-                  <div key={amount} className="relative group">
-                    <Button
-                      type="button"
-                      variant={
-                        selectedAmount === amount ? "default" : "outline"
-                      }
-                      onClick={() => handleAmountSelect(amount)}
-                      className={`relative h-16 text-xl font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 ${
-                        selectedAmount === amount
-                          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10 hover:shadow-md"
-                      }`}
-                    >
-                      ${amount}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="customAmount" className="text-white/90">
-                  Or enter custom amount
-                </Label>
+        {/* Sign In Section */}
+        {!isSignedIn && (
+          <Card className="mb-8 bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-3 text-2xl">
                 <div className="relative">
-                  <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/50" />
-                  <Input
-                    id="customAmount"
-                    type="number"
-                    min="1"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={customAmount}
-                    onChange={handleCustomAmountChange}
-                    className="pl-12 text-xl h-16 bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-purple-500 focus:ring-purple-500/20 rounded-2xl"
-                  />
+                  <Zap className="h-8 w-8 text-blue-400" />
+                  <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-lg animate-pulse" />
+                </div>
+                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                  Connect Your Wallet
+                </span>
+              </CardTitle>
+              <CardDescription className="text-white/70 text-lg">
+                Sign in with your Base account to send tips securely. No account
+                required - connect any wallet!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex justify-center">
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <SignInWithBaseButton
+                      align="center"
+                      variant="solid"
+                      colorScheme="dark"
+                      onClick={handleSignIn}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Optional Message */}
-            <div className="space-y-3">
-              <Label htmlFor="message" className="text-white/90">
-                Message (Optional)
-              </Label>
-              <Textarea
-                id="message"
-                placeholder="Leave a supportive message for the creator..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={4}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-purple-500 focus:ring-purple-500/20 rounded-2xl resize-none"
-              />
-            </div>
-
-            {/* Payment Status */}
-            {paymentStatus && paymentStatus.type === "error" && (
-              <Alert className="bg-red-500/10 border-red-500/30">
-                <AlertDescription className="text-red-300">
-                  {paymentStatus.message}
+              <Alert className="bg-blue-500/10 border-blue-500/30">
+                <CheckCircle className="h-5 w-5 text-blue-400" />
+                <AlertDescription className="text-blue-300">
+                  Secure connection powered by Base. Your wallet stays safe and
+                  private.
                 </AlertDescription>
               </Alert>
-            )}
+            </CardContent>
+          </Card>
+        )}
 
-            {paymentLoading && (
-              <div className="text-center py-8">
-                <div className="relative">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-purple-400" />
-                  <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-xl animate-pulse" />
-                </div>
-                <p className="text-white/70 text-lg">Processing payment...</p>
+        {/* Connected Status */}
+        {isSignedIn && (
+          <Card className="mb-8 bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-xl border-green-500/30 shadow-2xl">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-center space-x-3">
+                <CheckCircle className="h-6 w-6 text-green-400 animate-pulse" />
+                <span className="text-green-300 font-semibold text-lg">
+                  ✅ Connected to Base Account
+                </span>
               </div>
-            )}
+            </CardContent>
+          </Card>
+        )}
 
-            {getTipAmount() >= 1 && (
-              <div className="space-y-6">
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+        {/* Tip Form - Only show when signed in */}
+        {isSignedIn && (
+          <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-3 text-2xl">
+                <div className="relative">
+                  <DollarSign className="h-8 w-8 text-green-400" />
+                  <div className="absolute -inset-2 bg-green-500/20 rounded-full blur-lg animate-pulse" />
+                </div>
+                <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                  Send a Tip
+                </span>
+              </CardTitle>
+              <CardDescription className="text-white/70 text-lg">
+                Show your support with a financial tip. Your wallet is connected
+                and ready!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {/* Amount Selection */}
+              <div className="space-y-4">
+                <Label className="text-xl font-medium text-white/90">
+                  Choose Amount
+                </Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {predefinedAmounts.map((amount) => (
+                    <div key={amount} className="relative group">
+                      <Button
+                        type="button"
+                        variant={
+                          selectedAmount === amount ? "default" : "outline"
+                        }
+                        onClick={() => handleAmountSelect(amount)}
+                        className={`relative h-16 text-xl font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 ${
+                          selectedAmount === amount
+                            ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
+                            : "bg-white/5 border-white/20 text-white hover:bg-white/10 hover:shadow-md"
+                        }`}
+                      >
+                        ${amount}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="customAmount" className="text-white/90">
+                    Or enter custom amount
+                  </Label>
                   <div className="relative">
-                    <BasePayButton colorScheme="dark" onClick={handlePayment} />
+                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/50" />
+                    <Input
+                      id="customAmount"
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={customAmount}
+                      onChange={handleCustomAmountChange}
+                      className="pl-12 text-xl h-16 bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-purple-500 focus:ring-purple-500/20 rounded-2xl"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <Alert className="bg-green-500/10 border-green-500/30">
-                  <CheckCircle className="h-5 w-5 text-green-400" />
-                  <AlertDescription className="text-green-300">
-                    Secure payment powered by Base. Pay with any wallet, card,
-                    or bank account. No tiptag account required!
+              {/* Optional Message */}
+              <div className="space-y-3">
+                <Label htmlFor="message" className="text-white/90">
+                  Message (Optional)
+                </Label>
+                <Textarea
+                  id="message"
+                  placeholder="Leave a supportive message for the creator..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-purple-500 focus:ring-purple-500/20 rounded-2xl resize-none"
+                />
+              </div>
+
+              {/* Payment Status */}
+              {paymentStatus && paymentStatus.type === "error" && (
+                <Alert className="bg-red-500/10 border-red-500/30">
+                  <AlertDescription className="text-red-300">
+                    {paymentStatus.message}
                   </AlertDescription>
                 </Alert>
-              </div>
-            )}
+              )}
 
-            {getTipAmount() < 1 && (
-              <Alert className="bg-yellow-500/10 border-yellow-500/30">
-                <DollarSign className="h-5 w-5 text-yellow-400" />
-                <AlertDescription className="text-yellow-300">
-                  Please select or enter a tip amount of at least $1 to
-                  continue.
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
+              {paymentLoading && (
+                <div className="text-center py-8">
+                  <div className="relative">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-purple-400" />
+                    <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-xl animate-pulse" />
+                  </div>
+                  <p className="text-white/70 text-lg">Processing payment...</p>
+                </div>
+              )}
+
+              {getTipAmount() >= 1 && (
+                <div className="space-y-6">
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative">
+                      <BasePayButton
+                        colorScheme="dark"
+                        onClick={handlePayment}
+                      />
+                    </div>
+                  </div>
+                  <Alert className="bg-green-500/10 border-green-500/30">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <AlertDescription className="text-green-300">
+                      Secure payment powered by Base. Your wallet is connected
+                      and ready to send!
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+
+              {getTipAmount() < 1 && (
+                <Alert className="bg-yellow-500/10 border-yellow-500/30">
+                  <DollarSign className="h-5 w-5 text-yellow-400" />
+                  <AlertDescription className="text-yellow-300">
+                    Please select or enter a tip amount of at least $1 to
+                    continue.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {paymentId && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleCheckStatus}
+                    variant="outline"
+                    className="bg-white/5 border-white/20 text-white hover:bg-white/10"
+                  >
+                    Check Payment Status
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Footer */}
         <div className="text-center mt-12 space-y-4">

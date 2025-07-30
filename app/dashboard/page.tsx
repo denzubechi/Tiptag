@@ -233,7 +233,7 @@ export default function EnhancedDashboardPage() {
                 <Wallet>
                   <ConnectWallet className="relative bg-black border-0 rounded-2xl px-8 py-4 text-white hover:bg-white/10 transition-all duration-300">
                     <WalletIcon className="h-6 w-6 mr-3" />
-                    <span className="text-lg font-medium">Connect Wallet</span>
+                    <span className="text-lg font-medium">Launch Dashboard</span>
                   </ConnectWallet>
                   <WalletDropdown>
                     <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
@@ -245,7 +245,7 @@ export default function EnhancedDashboardPage() {
                       icon="wallet"
                       href="https://keys.coinbase.com"
                     >
-                      Wallet
+                      Connect
                     </WalletDropdownLink>
                     <WalletDropdownDisconnect />
                   </WalletDropdown>
