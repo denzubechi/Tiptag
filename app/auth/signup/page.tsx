@@ -321,7 +321,7 @@ export default function SignUpPage() {
                   </Label>
                   <div className="flex rounded-xl overflow-hidden">
                     <span className="inline-flex items-center px-4 bg-white/10 border border-r-0 border-white/20 text-white/70 text-sm">
-                      tiptag.com/tip/
+                      get-tiptag.vercel.app/tip/
                     </span>
                     <Input
                       id="tipTag"
