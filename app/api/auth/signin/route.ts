@@ -27,13 +27,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email is verified
-    if (!user.isVerified) {
-      return NextResponse.json(
-        { error: "Please verify your email before signing in" },
-        { status: 401 }
-      );
-    }
+    // // Check if email is verified
+    // if (!user.isVerified) {
+    //   return NextResponse.json(
+    //     { error: "Please verify your email before signing in" },
+    //     { status: 401 }
+    //   );
+    // }
 
     const authUserPayload: AuthUser = {
       userId: user.id,

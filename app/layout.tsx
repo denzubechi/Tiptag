@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "tiptag - The Future of Creator Support",
+  title: "Tiptag - The Future of Creator Support",
   description:
     "Create stunning tip pages, track your growth with powerful analytics, set funding goals, and build deeper connections with your audience.",
   keywords:
@@ -16,14 +16,14 @@ export const metadata: Metadata = {
     title: "tiptag - The Future of Creator Support",
     description:
       "Create stunning tip pages, track your growth with powerful analytics, set funding goals, and build deeper connections with your audience.",
-    url: "https://tiptag.vercel.app",
+    url: "https://get-tiptag.vercel.app",
     siteName: "tiptag",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "tiptag - Creator Support Platform",
+        alt: "Tiptag - Creator Support Platform",
       },
     ],
     locale: "en_US",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "tiptag - The Future of Creator Support",
+    title: "Tiptag - The Future of Creator Support",
     description:
       "Create stunning tip pages, track your growth with powerful analytics, set funding goals, and build deeper connections with your audience.",
     images: ["/og-image.png"],
