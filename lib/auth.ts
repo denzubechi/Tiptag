@@ -4,9 +4,8 @@ import type { NextRequest } from "next/server";
 export interface AuthUser {
   userId: string;
   email: string;
-  userType: "freelancer" | "company";
-  name: string;
-  avatarUrl: string;
+  tipTag: string;
+  walletAddress: string;
 }
 
 export async function requireAuth(request: NextRequest): Promise<string> {
@@ -17,7 +16,8 @@ export async function requireAuth(request: NextRequest): Promise<string> {
       throw new Error("Authentication required");
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
+    const jwtSecret =
+      process.env.JWT_SECRET || "your-super-secret-jwt-key-here";
     if (!jwtSecret) {
       throw new Error("JWT_SECRET not configured");
     }
@@ -63,7 +63,8 @@ export function generateToken(user: AuthUser): string {
     {
       userId: user.userId,
       email: user.email,
-      userType: user.userType,
+      tipTag: user.tipTag,
+      walletAdress: user.walletAddress,
     },
     jwtSecret,
     { expiresIn: "10d" }

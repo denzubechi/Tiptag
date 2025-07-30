@@ -1,43 +1,49 @@
-import { type NextRequest, NextResponse } from "next/server"
-import jwt from "jsonwebtoken"
-import { prisma } from "@/lib/prisma"
-
+import { type NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
+import { generateToken, AuthUser } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
-    const { walletAddress } = await request.json()
+    const { walletAddress } = await request.json();
 
     // Validation
     if (!walletAddress) {
-      return NextResponse.json({ error: "Wallet address is required" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Wallet address is required" },
+        { status: 400 }
+      );
     }
 
     // Find user by wallet address
     const user = await prisma.user.findUnique({
       where: { walletAddress },
-    })
+    });
 
     if (!user) {
-      return NextResponse.json({ error: "No account found with this wallet address" }, { status: 401 })
+      return NextResponse.json(
+        { error: "No account found with this wallet address" },
+        { status: 401 }
+      );
     }
 
     // Check if email is verified
     if (!user.isVerified) {
-      return NextResponse.json({ error: "Please verify your email before signing in" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Please verify your email before signing in" },
+        { status: 401 }
+      );
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        tipTag: user.tipTag,
-        walletAddress: user.walletAddress,
-      },
-      process.env.JWT_SECRET || "fallback-secret",
-      { expiresIn: "7d" },
-    )
+    const authUserPayload: AuthUser = {
+      userId: user.id,
+      email: user.email,
+      tipTag: user.tipTag,
+      walletAddress: user.walletAddress || "",
+    };
 
-    // Create response
+    const token = generateToken(authUserPayload);
+
     const response = NextResponse.json({
       message: "Sign in successful",
       user: {
@@ -47,19 +53,22 @@ export async function POST(request: NextRequest) {
         tipTag: user.tipTag,
         walletAddress: user.walletAddress,
       },
-    })
+    });
 
-    // Set HTTP-only cookie
-    response.cookies.set("auth-token", token, {
+    cookies().set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    })
+      maxAge: 10 * 24 * 60 * 60,
+      path: "/",
+    });
 
-    return response
+    return response;
   } catch (error) {
-    console.error("Signin error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Signin error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
