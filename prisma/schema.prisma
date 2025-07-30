@@ -1,0 +1,220 @@
+// Enhanced tiptagI Database Schema with Prisma and MongoDB
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  email             String   @unique
+  passwordHash      String?
+  walletAddress     String?  @unique
+  displayName       String
+  tipTag            String   @unique
+  bio               String?
+  avatarUrl         String?
+  isVerified        Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  totalTipsReceived Float    @default(0)
+  totalTipCount     Int      @default(0)
+  totalWithdrawn    Float    @default(0)
+  profileViews      Int      @default(0)
+  
+  // Enhanced fields
+  customTheme       String?  // JSON string for theme data
+  thankYouMessage   String?
+  redirectUrl       String?
+  streamAlerts      String?  // JSON string for stream alert settings
+  publicProfile     Boolean  @default(true)
+  allowPublicMessages Boolean @default(true)
+  
+  // Social verification
+  twitterHandle     String?
+  youtubeChannel    String?
+  twitchChannel     String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  links             CreatorLink[]
+  socialMedia       CreatorSocialMedia[]
+  tips              Tip[]
+  goals             TippingGoal[]
+  blogPosts         BlogPost[]
+  analytics         Analytics[]
+  withdrawals       Withdrawal[]
+  
+  @@map("users")
+}
+
+model CreatorLink {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  title        String
+  url          String
+  description  String?
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+  linkType     String  @default("custom")
+  embedData    String? // JSON string for rich embeds
+  clicks       Int     @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("creator_links")
+}
+
+model CreatorSocialMedia {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  platform     String
+  handle       String
+  url          String
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("creator_social_media")
+}
+
+model Tip {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  recipientUserId     String    @db.ObjectId
+  amount              Float
+  currency            String    @default("USD")
+  message             String?
+  tipperName          String    @default("Anonymous")
+  tipperEmail         String?
+  isPublicMessage     Boolean   @default(false)
+  isModerated         Boolean   @default(false)
+  paymentProvider     String    @default("base_pay")
+  paymentProviderId   String?
+  transactionHash     String?
+  paymentStatus       String    @default("pending")
+  paymentCompletedAt  DateTime?
+  
+  // Enhanced fields
+  tipperLocation      String?   // JSON string for geographical data
+  goalId              String?   @db.ObjectId
+  isHighlighted       Boolean   @default(false)
+  ipAddress           String?
+  userAgent           String?
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  recipient           User      @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+  goal                TippingGoal? @relation(fields: [goalId], references: [id])
+  
+  @@map("tips")
+}
+
+model TippingGoal {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  title         String
+  description   String?
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  isActive      Boolean  @default(true)
+  isPublic      Boolean  @default(true)
+  deadline      DateTime?
+  completedAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tips          Tip[]
+  
+  @@map("tipping_goals")
+}
+
+model BlogPost {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  title     String
+  content   String
+  isPublic  Boolean  @default(true)
+  views     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("blog_posts")
+}
+
+model Analytics {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  date            DateTime @default(now())
+  profileViews    Int      @default(0)
+  tipPageViews    Int      @default(0)
+  linkClicks      String?  // JSON string for individual link clicks
+  referrers       String?  // JSON string for traffic sources
+  deviceData      String?  // JSON string for device information
+  locationData    String?  // JSON string for geographical data
+  
+  createdAt       DateTime @default(now())
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("analytics")
+}
+
+model Withdrawal {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  amount          Float
+  walletAddress   String
+  transactionHash String?
+  status          String    @default("pending") // pending, processing, completed, failed
+  failureReason   String?
+  networkFee      Float?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("withdrawals")
+}
+
+model EmailVerificationCode {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  code      String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("email_verification_codes")
+}
+
+model PasswordResetCode {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  code      String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("password_reset_codes")
+}
