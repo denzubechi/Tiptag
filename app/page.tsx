@@ -155,7 +155,7 @@ export default function HomePage() {
                   <ArrowRight className="h-5 w-5 ml-2 sm:h-6 sm:w-6 sm:ml-3 group-hover:translate-x-1 transition-transform duration-300" />
                 </Button>
               </Link>
-              <Link href="/demo/creator123">
+              <Link href="/tip/nzubechi">
                 <Button
                   variant="outline"
                   size="lg"
