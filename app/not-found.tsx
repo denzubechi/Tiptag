@@ -25,7 +25,7 @@ export default function NotFound() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative  bg-backgroud overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="floating-orb-404 orb-1"></div>
         <div className="floating-orb-404 orb-2"></div>
@@ -65,50 +65,12 @@ export default function NotFound() {
               you're looking for has vanished into the digital cosmos.
             </p>
           </div>
-
           {/* Navigation options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+          <div className=" gap-4 mt-8">
             <Link href="/">
               <Button className="w-full glass-button text-white hover:text-white group transition-all duration-300">
                 <Home className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                 Return Home
-              </Button>
-            </Link>
-
-            <Link href="/bounties">
-              <Button className="w-full glass-button text-white hover:text-white group transition-all duration-300">
-                <Trophy className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Browse Bounties
-              </Button>
-            </Link>
-
-            <Link href="/projects">
-              <Button className="w-full glass-button text-white hover:text-white group transition-all duration-300">
-                <Briefcase className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                View Projects
-              </Button>
-            </Link>
-
-            <Button
-              onClick={() => window.history.back()}
-              className="w-full glass-button text-white hover:text-white group transition-all duration-300"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-              Go Back
-            </Button>
-          </div>
-
-          <div className="pt-6 border-t border-white/10">
-            <p className="text-sm text-gray-400 mb-4">
-              Or try searching for what you need:
-            </p>
-            <Link href="/bounties">
-              <Button
-                variant="outline"
-                className="glass-button border-white/20 text-white hover:text-white group bg-transparent"
-              >
-                <Search className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Search Bounties & Projects
               </Button>
             </Link>
           </div>

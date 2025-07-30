@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const JWT_SECRET_KEY = "your-super-secret-jwt-key";
+const JWT_SECRET_KEY = "your-super-secret-jwt-key-here";
 
 const PUBLIC_PATHS_EXACT = [
   "/",
