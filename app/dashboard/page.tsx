@@ -194,8 +194,13 @@ export default function EnhancedDashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
+        </div>
+        <Card className="w-full max-w-md bg-white/5 backdrop-blur-xl border-white/20 relative z-10 shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Heart className="h-8 w-8 text-primary" />
@@ -237,10 +242,15 @@ export default function EnhancedDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
+        </div>
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your dashboard...</p>
+          <p className="text-white/70">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -248,7 +258,12 @@ export default function EnhancedDashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
+        </div>
         <div className="text-center">
           <p className="text-destructive mb-4">Error: {error}</p>
           <Button onClick={fetchDashboardData}>Try Again</Button>
@@ -260,10 +275,16 @@ export default function EnhancedDashboardPage() {
   if (!dashboardData) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
+      </div>
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
+      <header className="border-b border-white/10 bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-black/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 relative z-10">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <Heart className="h-6 w-6 text-primary" />
@@ -277,7 +298,10 @@ export default function EnhancedDashboardPage() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-3">
               <Link href={`/${dashboardData.user.tipTag}`}>
-                <Button variant="outline" size="sm">
+                <Button
+                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
+                  size="sm"
+                >
                   <Eye className="h-4 w-4 mr-2" />
                   View Profile
                 </Button>
@@ -330,9 +354,8 @@ export default function EnhancedDashboardPage() {
               <div className="flex flex-col space-y-2">
                 <Link href={`/${dashboardData.user.tipTag}`}>
                   <Button
-                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                     size="sm"
-                    className="w-full justify-start bg-transparent"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     View Profile
@@ -354,7 +377,7 @@ export default function EnhancedDashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 space-y-8">
+      <div className="container mx-auto px-4 py-6 space-y-8 relative z-10">
         {/* Welcome Section */}
         <div className="space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -362,7 +385,7 @@ export default function EnhancedDashboardPage() {
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 Welcome back, {dashboardData.user.displayName}!
               </h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
+              <p className="text-white/70 text-sm sm:text-base">
                 Here's how your creator journey is progressing
               </p>
             </div>
@@ -405,25 +428,28 @@ export default function EnhancedDashboardPage() {
               icon: Users,
             },
           ].map((stat, index) => (
-            <Card key={index} className="hover:shadow-md transition-shadow">
+            <Card
+              key={index}
+              className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10 hover:shadow-md transition-shadow"
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-white/70">
                   {stat.title}
                 </CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
+                <stat.icon className="h-4 w-4 text-white/70" />
               </CardHeader>
               <CardContent>
                 <div className="text-xl sm:text-2xl font-bold">
                   {stat.value}
                 </div>
-                <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
+                <p className="text-xs text-white/70">{stat.subtitle}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Wallet Management */}
-        <Card>
+        <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center space-x-2">
@@ -471,7 +497,7 @@ export default function EnhancedDashboardPage() {
                 <p className="text-2xl font-bold">
                   ${dashboardData.analytics.monthlyTips.toFixed(2)}
                 </p>
-                <p className="text-sm text-muted-foreground">Tips received</p>
+                <p className="text-sm text-white/70">Tips received</p>
               </div>
 
               <div className="space-y-3">
@@ -485,8 +511,7 @@ export default function EnhancedDashboardPage() {
                 </p>
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="w-full bg-transparent"
+                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                   onClick={() =>
                     navigator.clipboard.writeText(
                       dashboardData.user.walletAddress
@@ -502,7 +527,7 @@ export default function EnhancedDashboardPage() {
 
         {/* Current Goal Progress */}
         {dashboardData.currentGoal && dashboardData.currentGoal.isActive && (
-          <Card>
+          <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center space-x-2">
@@ -540,8 +565,7 @@ export default function EnhancedDashboardPage() {
                 <Link href="/dashboard/goals">
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="w-full sm:w-auto bg-transparent"
+                    className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                   >
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Goal
@@ -549,8 +573,7 @@ export default function EnhancedDashboardPage() {
                 </Link>
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="w-full sm:w-auto bg-transparent"
+                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                   onClick={() => {
                     const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! ${dashboardData.currentGoal?.currentAmount}/${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
                     navigator.share?.({ text: shareText }) ||
@@ -572,7 +595,7 @@ export default function EnhancedDashboardPage() {
           className="space-y-6"
         >
           <div className="overflow-x-auto">
-            <TabsList className="grid w-full grid-cols-5 min-w-[500px] sm:min-w-0">
+            <TabsList className="grid w-full grid-cols-5 min-w-[500px] sm:min-w-0 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-2">
               {[
                 { value: "overview", icon: BarChart3, label: "Overview" },
                 { value: "analytics", icon: TrendingUp, label: "Analytics" },
@@ -587,7 +610,7 @@ export default function EnhancedDashboardPage() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="text-xs sm:text-sm"
+                  className="text-xs sm:text-sm data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 hover:text-white transition-all duration-300 rounded-xl"
                 >
                   <tab.icon className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">{tab.label}</span>
@@ -601,7 +624,7 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Quick Actions */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle className="flex items-center text-lg">
                     <Zap className="h-5 w-5 mr-2" />
@@ -618,7 +641,10 @@ export default function EnhancedDashboardPage() {
                       <code className="flex-1 px-3 py-2 bg-muted rounded text-sm font-mono text-xs sm:text-sm overflow-hidden">
                         tiptagi.com/tip/{dashboardData.user.tipTag}
                       </code>
-                      <Button size="sm" variant="outline" onClick={copyTipLink}>
+                      <Button
+                        size="sm"
+                        className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
+                      >
                         {copied ? "Copied!" : <Copy className="h-4 w-4" />}
                       </Button>
                     </div>
@@ -626,9 +652,8 @@ export default function EnhancedDashboardPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Link href={`/${dashboardData.user.tipTag}`}>
                       <Button
-                        variant="outline"
+                        className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                         size="sm"
-                        className="w-full bg-transparent"
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Profile
@@ -636,9 +661,8 @@ export default function EnhancedDashboardPage() {
                     </Link>
                     <Link href="/dashboard/profile">
                       <Button
-                        variant="outline"
+                        className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                         size="sm"
-                        className="w-full bg-transparent"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Profile
@@ -647,9 +671,8 @@ export default function EnhancedDashboardPage() {
                   </div>
                   <Link href="/dashboard/settings">
                     <Button
-                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                       size="sm"
-                      className="w-full bg-transparent"
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Account Settings
@@ -660,7 +683,7 @@ export default function EnhancedDashboardPage() {
 
               {/* Recent Tips */}
               <div className="lg:col-span-2">
-                <Card>
+                <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                   <CardHeader>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                       <div>
@@ -673,7 +696,10 @@ export default function EnhancedDashboardPage() {
                         </CardDescription>
                       </div>
                       <Link href="/dashboard/tips">
-                        <Button variant="outline" size="sm">
+                        <Button
+                          className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
+                          size="sm"
+                        >
                           View All
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </Button>
@@ -704,11 +730,11 @@ export default function EnhancedDashboardPage() {
                               )}
                             </div>
                             {tip.message && (
-                              <p className="text-muted-foreground italic text-sm">
+                              <p className="text-white/70 italic text-sm">
                                 "{tip.message}"
                               </p>
                             )}
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-white/70">
                               {new Date(tip.createdAt).toLocaleDateString(
                                 "en-US",
                                 {
@@ -733,7 +759,7 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Tips Over Time */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle>Tips Over Time</CardTitle>
                   <CardDescription>Your earnings trend</CardDescription>
@@ -779,7 +805,7 @@ export default function EnhancedDashboardPage() {
               </Card>
 
               {/* Geographic Distribution */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle>Geographic Distribution</CardTitle>
                   <CardDescription>
@@ -810,7 +836,7 @@ export default function EnhancedDashboardPage() {
                               }}
                             ></div>
                           </div>
-                          <span className="text-muted-foreground w-8 text-right text-sm">
+                          <span className="text-white/70 w-8 text-right text-sm">
                             {country.percentage}%
                           </span>
                         </div>
@@ -824,7 +850,7 @@ export default function EnhancedDashboardPage() {
 
           {/* Transactions Tab */}
           <TabsContent value="transactions" className="space-y-6">
-            <Card>
+            <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <WalletIcon className="h-5 w-5 mr-2" />
@@ -857,7 +883,7 @@ export default function EnhancedDashboardPage() {
                           <p className="font-medium">
                             {transaction.description}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-white/70">
                             {new Date(transaction.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -903,7 +929,7 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="community" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Top Tippers */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Trophy className="h-5 w-5 mr-2" />
@@ -926,7 +952,7 @@ export default function EnhancedDashboardPage() {
                           </div>
                           <div>
                             <p className="font-medium">{tipper.name}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-white/70">
                               {tipper.tipCount} tips
                             </p>
                           </div>
@@ -948,7 +974,7 @@ export default function EnhancedDashboardPage() {
               </Card>
 
               {/* Recent Messages */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <MessageCircle className="h-5 w-5 mr-2" />
@@ -968,7 +994,7 @@ export default function EnhancedDashboardPage() {
                           className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary"
                         >
                           <p className="italic mb-2">"{tip.message}"</p>
-                          <div className="flex justify-between items-center text-xs text-muted-foreground">
+                          <div className="flex justify-between items-center text-xs text-white/70">
                             <span>— {tip.tipperName}</span>
                             <span>
                               {new Date(tip.createdAt).toLocaleDateString(
@@ -992,7 +1018,7 @@ export default function EnhancedDashboardPage() {
           <TabsContent value="sharing" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Sharing Tools */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Share2 className="h-5 w-5 mr-2" />
@@ -1005,19 +1031,18 @@ export default function EnhancedDashboardPage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
-                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                       onClick={copyTipLink}
-                      className="w-full bg-transparent"
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy Link
                     </Button>
-                    <Button variant="outline" className="w-full bg-transparent">
+                    <Button className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent">
                       <QrCode className="h-4 w-4 mr-2" />
                       QR Code
                     </Button>
                   </div>
-                  <Button variant="outline" className="w-full bg-transparent">
+                  <Button className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent">
                     <Code className="h-4 w-4 mr-2" />
                     Get Embed Code
                   </Button>
@@ -1054,10 +1079,9 @@ export default function EnhancedDashboardPage() {
                       ].map((platform) => (
                         <Button
                           key={platform.name}
-                          variant="outline"
+                          className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                           size="sm"
                           onClick={platform.action}
-                          className="w-full bg-transparent"
                         >
                           {platform.name}
                         </Button>
@@ -1068,7 +1092,7 @@ export default function EnhancedDashboardPage() {
               </Card>
 
               {/* Stream Integration */}
-              <Card>
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl relative z-10">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Zap className="h-5 w-5 mr-2" />
@@ -1101,7 +1125,7 @@ export default function EnhancedDashboardPage() {
                       className="p-4 bg-muted/50 rounded-lg space-y-3"
                     >
                       <h4 className="font-medium">{integration.title}</h4>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-white/70 text-sm">
                         {integration.description}
                       </p>
                       <Button size="sm" className="w-full">
