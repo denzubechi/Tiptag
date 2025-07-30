@@ -402,7 +402,7 @@ export default function EnhancedProfileEditPage() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Link href={`/${profileData.tipTag}`}>
+            <Link href={`/tip/${profileData.tipTag}`}>
               <Button
                 variant="outline"
                 size="sm"
