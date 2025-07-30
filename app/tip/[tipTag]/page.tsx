@@ -142,7 +142,8 @@ export default function TipPage() {
       const paymentResult = await pay({
         amount: tipAmount.toFixed(2),
         to: creator.walletAddress,
-        testnet: true,
+        testnet: false,
+
         payerInfo: {
           requests: [
             { type: "email", optional: true },
@@ -488,7 +489,7 @@ export default function TipPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center space-x-6 p-4 bg-white/5 rounded-2xl">
+            {/* <div className="flex items-center justify-center space-x-6 p-4 bg-white/5 rounded-2xl">
               <div className="flex items-center space-x-2">
                 <Heart className="h-5 w-5 text-red-400 animate-pulse" />
                 <span className="text-white/80">
@@ -499,7 +500,7 @@ export default function TipPage() {
                 <Zap className="h-5 w-5 text-yellow-400 animate-bounce" />
                 <span className="text-white/80">Active Creator</span>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
@@ -572,13 +573,6 @@ export default function TipPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {predefinedAmounts.map((amount) => (
                   <div key={amount} className="relative group">
-                    <div
-                      className={`absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 transition duration-300 ${
-                        selectedAmount === amount
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-75"
-                      }`}
-                    ></div>
                     <Button
                       type="button"
                       variant={
@@ -587,8 +581,8 @@ export default function TipPage() {
                       onClick={() => handleAmountSelect(amount)}
                       className={`relative h-16 text-xl font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 ${
                         selectedAmount === amount
-                          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10"
+                          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg"
+                          : "bg-white/5 border-white/20 text-white hover:bg-white/10 hover:shadow-md"
                       }`}
                     >
                       ${amount}
@@ -687,7 +681,7 @@ export default function TipPage() {
           <div className="flex items-center justify-center space-x-4 text-white/60">
             <span>Powered by</span>
             <span className="font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              tiptag
+              Tiptag
             </span>
             <span>&</span>
             <span className="font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">

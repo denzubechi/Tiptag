@@ -32,10 +32,14 @@ import {
   Zap,
   QrCode,
   Code,
+  Trophy,
   Loader2,
   WalletIcon,
   ArrowUpRight,
   ArrowDownLeft,
+  Rocket,
+  Menu,
+  X,
 } from "lucide-react";
 import {
   LineChart,
@@ -116,7 +120,7 @@ interface DashboardData {
   }>;
 }
 
-export default function DashboardPage() {
+export default function EnhancedDashboardPage() {
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -126,6 +130,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [withdrawalLoading, setWithdrawalLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isConnected) {
@@ -139,11 +144,9 @@ export default function DashboardPage() {
       const response = await fetch("/api/dashboard", {
         credentials: "include",
       });
-
       if (!response.ok) {
         throw new Error("Failed to fetch dashboard data");
       }
-
       const data = await response.json();
       setDashboardData(data);
     } catch (err) {
@@ -164,7 +167,6 @@ export default function DashboardPage() {
 
   const handleWithdrawal = async (amount: number) => {
     if (!dashboardData || !isConnected) return;
-
     setWithdrawalLoading(true);
     try {
       const response = await fetch("/api/wallet/withdraw", {
@@ -176,7 +178,6 @@ export default function DashboardPage() {
         }),
         credentials: "include",
       });
-
       if (response.ok) {
         await fetchDashboardData();
         alert("Withdrawal initiated successfully!");
@@ -193,26 +194,24 @@ export default function DashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <Card className="w-full max-w-md bg-gray-900 border-gray-800">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-6">
-              <Heart className="h-10 w-10 text-gray-400" />
-              <span className="text-3xl font-bold text-white">tiptagI</span>
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Heart className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold">tiptagI</span>
             </div>
-            <CardTitle className="text-2xl text-white">
-              Connect Your Wallet
-            </CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-xl">Connect Your Wallet</CardTitle>
+            <CardDescription>
               Connect your wallet to access your creator dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex justify-center">
               <Wallet>
-                <ConnectWallet className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 px-8 py-4 text-lg font-medium">
-                  <WalletIcon className="h-6 w-6 mr-3" />
-                  <span>Connect Wallet</span>
+                <ConnectWallet className="w-full">
+                  <WalletIcon className="h-5 w-5 mr-2" />
+                  Connect Wallet
                 </ConnectWallet>
                 <WalletDropdown>
                   <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
@@ -238,10 +237,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-gray-400 mx-auto mb-6" />
-          <p className="text-gray-400 text-lg">Loading your dashboard...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -249,15 +248,10 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-red-400 mb-4 text-lg">Error: {error}</p>
-          <Button
-            onClick={fetchDashboardData}
-            className="bg-gray-800 hover:bg-gray-700 border-gray-700"
-          >
-            Try Again
-          </Button>
+          <p className="text-destructive mb-4">Error: {error}</p>
+          <Button onClick={fetchDashboardData}>Try Again</Button>
         </div>
       </div>
     );
@@ -266,35 +260,30 @@ export default function DashboardPage() {
   if (!dashboardData) return null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Heart className="h-8 w-8 text-gray-400" />
-              <span className="text-2xl font-bold text-white">tiptagI</span>
-              <Badge className="bg-gray-800 text-gray-300 border-gray-700">
+            <div className="flex items-center space-x-3">
+              <Heart className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold">tiptagI</span>
+              <Badge variant="secondary" className="hidden sm:inline-flex">
+                <Rocket className="h-3 w-3 mr-1" />
                 Dashboard
               </Badge>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-3">
               <Link href={`/${dashboardData.user.tipTag}`}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
-                >
+                <Button variant="outline" size="sm">
                   <Eye className="h-4 w-4 mr-2" />
                   View Profile
                 </Button>
               </Link>
               <Link href="/dashboard/settings">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-white hover:bg-gray-800"
-                >
+                <Button variant="ghost" size="sm">
                   <Settings className="h-4 w-4" />
                 </Button>
               </Link>
@@ -319,125 +308,147 @@ export default function DashboardPage() {
                 </WalletDropdown>
               </Wallet>
             </div>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 border-t pt-4">
+              <div className="flex flex-col space-y-2">
+                <Link href={`/${dashboardData.user.tipTag}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start bg-transparent"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Profile
+                  </Button>
+                </Link>
+                <Link href="/dashboard/settings">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Welcome Section */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 Welcome back, {dashboardData.user.displayName}!
               </h1>
-              <p className="text-gray-400 text-xl">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Here's how your creator journey is progressing
               </p>
             </div>
-            <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-6 py-3 text-lg">
+            <Badge variant="secondary" className="self-start sm:self-center">
+              <Trophy className="h-4 w-4 mr-2" />
               Pro Creator
             </Badge>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="bg-gray-900 border-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Total Tips
-              </CardTitle>
-              <DollarSign className="h-5 w-5 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white mb-1">
-                ${dashboardData.user.totalTipsReceived.toFixed(2)}
-              </div>
-              <p className="text-xs text-gray-500">All time earnings</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Wallet Balance
-              </CardTitle>
-              <WalletIcon className="h-5 w-5 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white mb-1">
-                ${dashboardData.user.walletBalance.toFixed(2)}
-              </div>
-              <p className="text-xs text-gray-500">Available to withdraw</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Total Tips Count
-              </CardTitle>
-              <Heart className="h-5 w-5 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white mb-1">
-                {dashboardData.user.totalTipCount}
-              </div>
-              <p className="text-xs text-gray-500">
-                Avg: ${dashboardData.analytics.averageTip.toFixed(2)}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Profile Views
-              </CardTitle>
-              <Users className="h-5 w-5 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-white mb-1">
-                {dashboardData.analytics.profileViews}
-              </div>
-              <p className="text-xs text-gray-500">
-                Conversion: {dashboardData.analytics.conversionRate.toFixed(1)}%
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {[
+            {
+              title: "Total Tips",
+              value: `$${dashboardData.user.totalTipsReceived.toFixed(2)}`,
+              subtitle: "All time earnings",
+              icon: DollarSign,
+            },
+            {
+              title: "Wallet Balance",
+              value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
+              subtitle: "Available to withdraw",
+              icon: WalletIcon,
+            },
+            {
+              title: "Total Tips Count",
+              value: dashboardData.user.totalTipCount.toString(),
+              subtitle: `Avg: $${dashboardData.analytics.averageTip.toFixed(
+                2
+              )}`,
+              icon: Heart,
+            },
+            {
+              title: "Profile Views",
+              value: dashboardData.analytics.profileViews.toString(),
+              subtitle: `Conversion: ${dashboardData.analytics.conversionRate.toFixed(
+                1
+              )}%`,
+              icon: Users,
+            },
+          ].map((stat, index) => (
+            <Card key={index} className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl sm:text-2xl font-bold">
+                  {stat.value}
+                </div>
+                <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Wallet Management */}
-        <Card className="mb-12 bg-gray-900 border-gray-800">
+        <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <WalletIcon className="h-6 w-6 text-gray-400" />
-                <CardTitle className="text-gray-300 text-2xl">
-                  Wallet Management
-                </CardTitle>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center space-x-2">
+                <WalletIcon className="h-5 w-5" />
+                <CardTitle>Wallet Management</CardTitle>
               </div>
-              <Badge className="bg-green-900 text-green-400 border-green-800">
+              <Badge variant="outline" className="self-start sm:self-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
                 Connected
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="flex items-center space-x-3 mb-4">
-                  <ArrowDownLeft className="h-5 w-5 text-gray-400" />
-                  <span className="font-medium text-gray-300">
-                    Available Balance
-                  </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                  <span className="font-medium">Available Balance</span>
                 </div>
-                <p className="text-2xl font-bold text-white mb-2">
+                <p className="text-2xl font-bold">
                   ${dashboardData.user.walletBalance.toFixed(2)}
                 </p>
                 <Button
                   size="sm"
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                  className="w-full"
                   onClick={() =>
                     handleWithdrawal(dashboardData.user.walletBalance)
                   }
@@ -452,31 +463,30 @@ export default function DashboardPage() {
                 </Button>
               </div>
 
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="flex items-center space-x-3 mb-4">
-                  <ArrowUpRight className="h-5 w-5 text-gray-400" />
-                  <span className="font-medium text-gray-300">This Month</span>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <ArrowUpRight className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium">This Month</span>
                 </div>
-                <p className="text-2xl font-bold text-white mb-2">
+                <p className="text-2xl font-bold">
                   ${dashboardData.analytics.monthlyTips.toFixed(2)}
                 </p>
-                <p className="text-gray-500 text-sm">Tips received</p>
+                <p className="text-sm text-muted-foreground">Tips received</p>
               </div>
 
-              <div className="p-6 bg-gray-800 rounded-xl">
-                <div className="flex items-center space-x-3 mb-4">
-                  <WalletIcon className="h-5 w-5 text-gray-400" />
-                  <span className="font-medium text-gray-300">
-                    Connected Wallet
-                  </span>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <WalletIcon className="h-4 w-4 text-purple-600" />
+                  <span className="font-medium">Connected Wallet</span>
                 </div>
-                <p className="text-2xl font-bold text-white mb-2">
+                <p className="text-lg font-mono">
                   {dashboardData.user.walletAddress.slice(0, 6)}...
                   {dashboardData.user.walletAddress.slice(-4)}
                 </p>
                 <Button
                   size="sm"
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                  variant="outline"
+                  className="w-full bg-transparent"
                   onClick={() =>
                     navigator.clipboard.writeText(
                       dashboardData.user.walletAddress
@@ -492,16 +502,16 @@ export default function DashboardPage() {
 
         {/* Current Goal Progress */}
         {dashboardData.currentGoal && dashboardData.currentGoal.isActive && (
-          <Card className="mb-12 bg-gray-900 border-gray-800">
+          <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Target className="h-6 w-6 text-gray-400" />
-                  <CardTitle className="text-gray-300 text-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center space-x-2">
+                  <Target className="h-5 w-5" />
+                  <CardTitle>
                     Current Goal: {dashboardData.currentGoal.title}
                   </CardTitle>
                 </div>
-                <Badge className="bg-gray-800 text-gray-300 border-gray-700 text-lg px-4 py-2">
+                <Badge variant="secondary">
                   {Math.round(
                     (dashboardData.currentGoal.currentAmount /
                       dashboardData.currentGoal.targetAmount) *
@@ -511,51 +521,45 @@ export default function DashboardPage() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="relative">
-                  <Progress
-                    value={
-                      (dashboardData.currentGoal.currentAmount /
-                        dashboardData.currentGoal.targetAmount) *
-                      100
-                    }
-                    className="h-4 bg-gray-800"
-                  />
-                </div>
-                <div className="flex justify-between text-lg">
-                  <span className="text-gray-400">
-                    ${dashboardData.currentGoal.currentAmount} raised
-                  </span>
-                  <span className="font-semibold text-white">
-                    ${dashboardData.currentGoal.targetAmount} goal
-                  </span>
-                </div>
-                <div className="flex space-x-4">
-                  <Link href="/dashboard/goals">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Goal
-                    </Button>
-                  </Link>
+            <CardContent className="space-y-4">
+              <Progress
+                value={
+                  (dashboardData.currentGoal.currentAmount /
+                    dashboardData.currentGoal.targetAmount) *
+                  100
+                }
+                className="h-3"
+              />
+              <div className="flex justify-between text-sm">
+                <span>${dashboardData.currentGoal.currentAmount} raised</span>
+                <span className="font-semibold">
+                  ${dashboardData.currentGoal.targetAmount} goal
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Link href="/dashboard/goals">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => {
-                      const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! ${dashboardData.currentGoal?.currentAmount}/${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
-                      navigator.share?.({ text: shareText }) ||
-                        navigator.clipboard.writeText(shareText);
-                    }}
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                    className="w-full sm:w-auto bg-transparent"
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share Goal
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Goal
                   </Button>
-                </div>
+                </Link>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full sm:w-auto bg-transparent"
+                  onClick={() => {
+                    const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! ${dashboardData.currentGoal?.currentAmount}/${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
+                    navigator.share?.({ text: shareText }) ||
+                      navigator.clipboard.writeText(shareText);
+                  }}
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share Goal
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -565,85 +569,66 @@ export default function DashboardPage() {
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="space-y-8"
+          className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-5 bg-gray-900 border-gray-800">
-            <TabsTrigger
-              value="overview"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger
-              value="analytics"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-            >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger
-              value="transactions"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-            >
-              <WalletIcon className="h-4 w-4 mr-2" />
-              Transactions
-            </TabsTrigger>
-            <TabsTrigger
-              value="community"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Community
-            </TabsTrigger>
-            <TabsTrigger
-              value="sharing"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Sharing
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="grid w-full grid-cols-5 min-w-[500px] sm:min-w-0">
+              {[
+                { value: "overview", icon: BarChart3, label: "Overview" },
+                { value: "analytics", icon: TrendingUp, label: "Analytics" },
+                {
+                  value: "transactions",
+                  icon: WalletIcon,
+                  label: "Transactions",
+                },
+                { value: "community", icon: Users, label: "Community" },
+                { value: "sharing", icon: Share2, label: "Sharing" },
+              ].map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="text-xs sm:text-sm"
+                >
+                  <tab.icon className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.slice(0, 4)}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Quick Actions */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-white">
-                    <Zap className="h-6 w-6 mr-3 text-gray-400" />
+                  <CardTitle className="flex items-center text-lg">
+                    <Zap className="h-5 w-5 mr-2" />
                     Quick Actions
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     Manage your tiptagI presence
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium text-gray-300">
-                      Your Tip Link
-                    </label>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Your Tip Link</label>
                     <div className="flex items-center space-x-2">
-                      <code className="flex-1 px-4 py-3 bg-gray-800 rounded-xl text-sm font-mono text-gray-300 border border-gray-700">
+                      <code className="flex-1 px-3 py-2 bg-muted rounded text-sm font-mono text-xs sm:text-sm overflow-hidden">
                         tiptagi.com/tip/{dashboardData.user.tipTag}
                       </code>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={copyTipLink}
-                        className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
-                      >
+                      <Button size="sm" variant="outline" onClick={copyTipLink}>
                         {copied ? "Copied!" : <Copy className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Link href={`/${dashboardData.user.tipTag}`}>
                       <Button
-                        className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
+                        variant="outline"
                         size="sm"
+                        className="w-full bg-transparent"
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Profile
@@ -651,19 +636,20 @@ export default function DashboardPage() {
                     </Link>
                     <Link href="/dashboard/profile">
                       <Button
-                        className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
+                        variant="outline"
                         size="sm"
+                        className="w-full bg-transparent"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Profile
                       </Button>
                     </Link>
                   </div>
-
                   <Link href="/dashboard/settings">
                     <Button
-                      className="w-full bg-gray-800 border border-gray-700 text-white hover:bg-gray-700"
+                      variant="outline"
                       size="sm"
+                      className="w-full bg-transparent"
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Account Settings
@@ -674,63 +660,55 @@ export default function DashboardPage() {
 
               {/* Recent Tips */}
               <div className="lg:col-span-2">
-                <Card className="bg-gray-900 border-gray-800">
+                <Card>
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center text-xl text-white">
-                        <Gift className="h-6 w-6 mr-3 text-gray-400" />
-                        Recent Tips
-                      </CardTitle>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <CardTitle className="flex items-center text-lg">
+                          <Gift className="h-5 w-5 mr-2" />
+                          Recent Tips
+                        </CardTitle>
+                        <CardDescription>
+                          Your latest supporter contributions
+                        </CardDescription>
+                      </div>
                       <Link href="/dashboard/tips">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
-                        >
+                        <Button variant="outline" size="sm">
                           View All
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
                     </div>
-                    <CardDescription className="text-gray-400">
-                      Your latest supporter contributions
-                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {dashboardData.recentTips.map((tip) => (
                         <div
                           key={tip.id}
-                          className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 rounded-lg border space-y-2 sm:space-y-0 ${
                             tip.isHighlighted
-                              ? "bg-yellow-900/20 border-yellow-800"
-                              : "bg-gray-800 border-gray-700 hover:border-gray-600"
+                              ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800"
+                              : "bg-muted/50"
                           }`}
                         >
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <span className="font-semibold text-2xl text-white">
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-lg">
                                 ${tip.amount.toFixed(2)}
                               </span>
-                              <Badge
-                                className={
-                                  tip.isHighlighted
-                                    ? "bg-yellow-900 text-yellow-400 border-yellow-800"
-                                    : "bg-gray-800 text-gray-300 border-gray-700"
-                                }
-                              >
+                              <Badge variant="secondary" className="text-xs">
                                 {tip.tipperName}
                               </Badge>
                               {tip.isHighlighted && (
-                                <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                                <Star className="h-4 w-4 text-yellow-500 fill-current" />
                               )}
                             </div>
                             {tip.message && (
-                              <p className="text-gray-400 italic mb-2 text-sm">
+                              <p className="text-muted-foreground italic text-sm">
                                 "{tip.message}"
                               </p>
                             )}
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {new Date(tip.createdAt).toLocaleDateString(
                                 "en-US",
                                 {
@@ -752,51 +730,59 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Tips Over Time */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">Tips Over Time</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Your earnings trend
-                  </CardDescription>
+                  <CardTitle>Tips Over Time</CardTitle>
+                  <CardDescription>Your earnings trend</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={dashboardData.tipsOverTime}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="date" stroke="#9CA3AF" />
-                      <YAxis stroke="#9CA3AF" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#1F2937",
-                          border: "1px solid #374151",
-                          borderRadius: "12px",
-                          color: "#ffffff",
-                        }}
-                        formatter={(value) => [`$${value}`, "Tips"]}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="amount"
-                        stroke="#6B7280"
-                        strokeWidth={3}
-                        dot={{ fill: "#6B7280", strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, fill: "#9CA3AF" }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={dashboardData.tipsOverTime}>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          className="opacity-30"
+                        />
+                        <XAxis
+                          dataKey="date"
+                          className="text-xs"
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis className="text-xs" tick={{ fontSize: 12 }} />
+                        <Tooltip
+                          formatter={(value) => [`$${value}`, "Tips"]}
+                          contentStyle={{
+                            backgroundColor: "hsl(var(--background))",
+                            border: "1px solid hsl(var(--border))",
+                            borderRadius: "8px",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="amount"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={2}
+                          dot={{
+                            fill: "hsl(var(--primary))",
+                            strokeWidth: 2,
+                            r: 4,
+                          }}
+                          activeDot={{ r: 6, fill: "hsl(var(--primary))" }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </CardContent>
               </Card>
 
               {/* Geographic Distribution */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">
-                    Geographic Distribution
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle>Geographic Distribution</CardTitle>
+                  <CardDescription>
                     Where your supporters are from
                   </CardDescription>
                 </CardHeader>
@@ -805,27 +791,28 @@ export default function DashboardPage() {
                     {dashboardData.geographicData.map((country, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-800 rounded-xl"
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                       >
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
                           <div
-                            className="w-4 h-4 rounded-full"
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: country.color }}
                           ></div>
-                          <span className="text-gray-300 font-medium">
-                            {country.country}
-                          </span>
+                          <span className="font-medium">{country.country}</span>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-white">
-                            {country.percentage}%
-                          </p>
-                          <div className="w-16 bg-gray-700 rounded-full h-2 mt-1">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
                             <div
-                              className="bg-gray-500 h-2 rounded-full"
-                              style={{ width: `${country.percentage}%` }}
+                              className="h-2 rounded-full transition-all duration-500"
+                              style={{
+                                width: `${country.percentage}%`,
+                                backgroundColor: country.color,
+                              }}
                             ></div>
                           </div>
+                          <span className="text-muted-foreground w-8 text-right text-sm">
+                            {country.percentage}%
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -836,37 +823,41 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Transactions Tab */}
-          <TabsContent value="transactions" className="space-y-8">
-            <Card className="bg-gray-900 border-gray-800">
+          <TabsContent value="transactions" className="space-y-6">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-xl text-white">
-                  <WalletIcon className="h-6 w-6 mr-3 text-gray-400" />
+                <CardTitle className="flex items-center">
+                  <WalletIcon className="h-5 w-5 mr-2" />
                   Transaction History
                 </CardTitle>
-                <CardDescription className="text-gray-400">
-                  All your tips and withdrawals
-                </CardDescription>
+                <CardDescription>All your tips and withdrawals</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {dashboardData.recentTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-700"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-muted/50 rounded-lg space-y-2 sm:space-y-0"
                     >
-                      <div className="flex items-center space-x-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700">
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                            transaction.type === "tip_received"
+                              ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400"
+                              : "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                          }`}
+                        >
                           {transaction.type === "tip_received" ? (
-                            <ArrowDownLeft className="h-5 w-5 text-gray-300" />
+                            <ArrowDownLeft className="h-4 w-4" />
                           ) : (
-                            <ArrowUpRight className="h-5 w-5 text-gray-300" />
+                            <ArrowUpRight className="h-4 w-4" />
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-white">
+                          <p className="font-medium">
                             {transaction.description}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-muted-foreground">
                             {new Date(transaction.createdAt).toLocaleDateString(
                               "en-US",
                               {
@@ -880,16 +871,23 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-lg text-white">
+                        <p
+                          className={`font-semibold ${
+                            transaction.type === "tip_received"
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-blue-600 dark:text-blue-400"
+                          }`}
+                        >
                           {transaction.type === "tip_received" ? "+" : "-"}$
                           {transaction.amount.toFixed(2)}
                         </p>
                         <Badge
-                          className={
+                          variant={
                             transaction.status === "completed"
-                              ? "bg-green-900 text-green-400 border-green-800"
-                              : "bg-yellow-900 text-yellow-400 border-yellow-800"
+                              ? "default"
+                              : "secondary"
                           }
+                          className="text-xs"
                         >
                           {transaction.status}
                         </Badge>
@@ -902,16 +900,16 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Community Tab */}
-          <TabsContent value="community" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <TabsContent value="community" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Top Tippers */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-white">
-                    <Star className="h-6 w-6 mr-3 text-gray-400" />
+                  <CardTitle className="flex items-center">
+                    <Trophy className="h-5 w-5 mr-2" />
                     Top Supporters
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     Your most generous supporters
                   </CardDescription>
                 </CardHeader>
@@ -920,27 +918,25 @@ export default function DashboardPage() {
                     {dashboardData.topTippers.map((tipper, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 bg-gray-800 rounded-xl"
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                       >
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full text-white text-lg font-bold">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-bold">
                             {index + 1}
                           </div>
                           <div>
-                            <p className="font-medium text-white">
-                              {tipper.name}
-                            </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="font-medium">{tipper.name}</p>
+                            <p className="text-xs text-muted-foreground">
                               {tipper.tipCount} tips
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-white text-lg">
+                          <p className="font-semibold">
                             ${tipper.amount.toFixed(2)}
                           </p>
                           {tipper.badge && (
-                            <Badge className="text-xs bg-gray-700 text-gray-300 border-gray-600">
+                            <Badge variant="secondary" className="text-xs">
                               {tipper.badge}
                             </Badge>
                           )}
@@ -952,13 +948,13 @@ export default function DashboardPage() {
               </Card>
 
               {/* Recent Messages */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-white">
-                    <MessageCircle className="h-6 w-6 mr-3 text-gray-400" />
+                  <CardTitle className="flex items-center">
+                    <MessageCircle className="h-5 w-5 mr-2" />
                     Recent Messages
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     Messages from your supporters
                   </CardDescription>
                 </CardHeader>
@@ -969,12 +965,10 @@ export default function DashboardPage() {
                       .map((tip) => (
                         <div
                           key={tip.id}
-                          className="p-4 bg-gray-800 rounded-xl border-l-4 border-gray-600"
+                          className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary"
                         >
-                          <p className="text-gray-300 italic mb-3 leading-relaxed">
-                            "{tip.message}"
-                          </p>
-                          <div className="flex justify-between items-center text-xs text-gray-500">
+                          <p className="italic mb-2">"{tip.message}"</p>
+                          <div className="flex justify-between items-center text-xs text-muted-foreground">
                             <span>— {tip.tipperName}</span>
                             <span>
                               {new Date(tip.createdAt).toLocaleDateString(
@@ -995,51 +989,43 @@ export default function DashboardPage() {
           </TabsContent>
 
           {/* Sharing Tab */}
-          <TabsContent value="sharing" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <TabsContent value="sharing" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Sharing Tools */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-white">
-                    <Share2 className="h-6 w-6 mr-3 text-gray-400" />
+                  <CardTitle className="flex items-center">
+                    <Share2 className="h-5 w-5 mr-2" />
                     Sharing Tools
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     Promote your tip page across platforms
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       variant="outline"
                       onClick={copyTipLink}
-                      className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
+                      className="w-full bg-transparent"
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy Link
                     </Button>
-                    <Button
-                      variant="outline"
-                      className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
-                    >
+                    <Button variant="outline" className="w-full bg-transparent">
                       <QrCode className="h-4 w-4 mr-2" />
                       QR Code
                     </Button>
                   </div>
-
-                  <Button
-                    variant="outline"
-                    className="w-full bg-gray-800 border-gray-700 text-white hover:bg-gray-700 h-12"
-                  >
+                  <Button variant="outline" className="w-full bg-transparent">
                     <Code className="h-4 w-4 mr-2" />
                     Get Embed Code
                   </Button>
-
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-gray-300">
+                    <label className="text-sm font-medium">
                       Platform-Specific Shares
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       {[
                         {
                           name: "Twitter",
@@ -1071,7 +1057,7 @@ export default function DashboardPage() {
                           variant="outline"
                           size="sm"
                           onClick={platform.action}
-                          className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
+                          className="w-full bg-transparent"
                         >
                           {platform.name}
                         </Button>
@@ -1082,17 +1068,17 @@ export default function DashboardPage() {
               </Card>
 
               {/* Stream Integration */}
-              <Card className="bg-gray-900 border-gray-800">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-white">
-                    <Zap className="h-6 w-6 mr-3 text-gray-400" />
+                  <CardTitle className="flex items-center">
+                    <Zap className="h-5 w-5 mr-2" />
                     Stream Integration
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription>
                     Connect with streaming platforms
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4">
                   {[
                     {
                       title: "Streamlabs Integration",
@@ -1110,17 +1096,15 @@ export default function DashboardPage() {
                       action: "Setup Webhook",
                     },
                   ].map((integration, index) => (
-                    <div key={index} className="p-6 bg-gray-800 rounded-xl">
-                      <h4 className="font-medium mb-2 text-white">
-                        {integration.title}
-                      </h4>
-                      <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+                    <div
+                      key={index}
+                      className="p-4 bg-muted/50 rounded-lg space-y-3"
+                    >
+                      <h4 className="font-medium">{integration.title}</h4>
+                      <p className="text-muted-foreground text-sm">
                         {integration.description}
                       </p>
-                      <Button
-                        size="sm"
-                        className="bg-gray-700 hover:bg-gray-600 text-white"
-                      >
+                      <Button size="sm" className="w-full">
                         {integration.action}
                       </Button>
                     </div>
