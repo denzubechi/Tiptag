@@ -336,7 +336,7 @@ export default function EnhancedDashboardPage() {
               </Badge>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href={`/${dashboardData.user.tipTag}`}>
+              <Link href={`/dashboard/profile`}>
                 <Button
                   variant="outline"
                   size="sm"
@@ -346,15 +346,7 @@ export default function EnhancedDashboardPage() {
                   View Profile
                 </Button>
               </Link>
-              <Link href="/dashboard/settings">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white/80 hover:text-white hover:bg-white/10"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </Link>
+
               <Wallet>
                 <ConnectWallet>
                   <OnchainAvatar className="h-6 w-6" />
@@ -452,7 +444,7 @@ export default function EnhancedDashboardPage() {
               style={{ animationDelay: stat.delay }}
             >
               <Card
-                className={`bg-gradient-to-r ${stat.gradient} border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}
+                className={`bg-transparent border border-gray-300 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-white/90">
@@ -472,7 +464,7 @@ export default function EnhancedDashboardPage() {
         </div>
 
         {/* Wallet Management */}
-        <Card className="mb-12 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl border-blue-500/30 shadow-2xl">
+        <Card className="mb-12 bg-transparent border-blue-500/30 shadow-2xl">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -573,7 +565,7 @@ export default function EnhancedDashboardPage() {
 
         {/* Current Goal Progress */}
         {dashboardData.currentGoal && dashboardData.currentGoal.isActive && (
-          <Card className="mb-12 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 backdrop-blur-xl border-indigo-500/30 shadow-2xl">
+          <Card className="mb-12 bg-transparent  border-indigo-500/30 shadow-2xl">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -709,7 +701,7 @@ export default function EnhancedDashboardPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <Link href={`/${dashboardData.user.tipTag}`}>
+                    <Link href={`/dashboard/profile`}>
                       <Button
                         className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
                         variant="outline"
@@ -730,17 +722,6 @@ export default function EnhancedDashboardPage() {
                       </Button>
                     </Link>
                   </div>
-
-                  <Link href="/dashboard/settings">
-                    <Button
-                      className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Account Settings
-                    </Button>
-                  </Link>
                 </CardContent>
               </Card>
 
@@ -1031,7 +1012,7 @@ export default function EnhancedDashboardPage() {
                         className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 group"
                       >
                         <div className="flex items-center space-x-4">
-                          <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="flex items-center justify-center w-12 h-12 bg-transparent border border-gray-300 text-white text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                             {index + 1}
                           </div>
                           <div>
