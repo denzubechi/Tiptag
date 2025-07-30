@@ -1,25 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
 
+import { requireAuth } from "@/lib/auth";
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "fallback-secret"
-    ) as any;
-    const userId = decoded.userId;
+    const userId = await requireAuth(request);
 
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("timeRange") || "30d";

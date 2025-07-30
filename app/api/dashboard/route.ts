@@ -1,20 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "fallback-secret"
-    ) as { userId: string };
-    const userId = decoded.userId;
+    const userId = await requireAuth(request);
 
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
