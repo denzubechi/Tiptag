@@ -31,25 +31,28 @@ import {
   Zap,
   QrCode,
   Code,
+  Sparkles,
   Trophy,
   Loader2,
   WalletIcon,
   ArrowUpRight,
   ArrowDownLeft,
+  Rocket,
   Menu,
   X,
   ChevronDown,
+  TrendingDown,
   Activity,
   Globe,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
 } from "recharts";
 import {
   ConnectWallet,
@@ -121,7 +124,7 @@ interface DashboardData {
   }>;
 }
 
-export default function SimpleDashboard() {
+export default function EnhancedDashboardPage() {
   const { address, isConnected } = useAccount();
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -131,11 +134,14 @@ export default function SimpleDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [withdrawalLoading, setWithdrawalLoading] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState("tips");
 
   // Mock data for demo purposes
   useEffect(() => {
     if (isConnected) {
+      // Simulate API call
       setTimeout(() => {
         setDashboardData({
           user: {
@@ -188,10 +194,10 @@ export default function SimpleDashboard() {
             { date: "May", amount: 485 },
           ],
           geographicData: [
-            { country: "United States", percentage: 45, color: "#6b7280" },
-            { country: "Canada", percentage: 25, color: "#9ca3af" },
-            { country: "United Kingdom", percentage: 20, color: "#d1d5db" },
-            { country: "Others", percentage: 10, color: "#e5e7eb" },
+            { country: "United States", percentage: 45, color: "#8b5cf6" },
+            { country: "Canada", percentage: 25, color: "#ec4899" },
+            { country: "United Kingdom", percentage: 20, color: "#06b6d4" },
+            { country: "Others", percentage: 10, color: "#10b981" },
           ],
           recentTransactions: [
             {
@@ -215,6 +221,13 @@ export default function SimpleDashboard() {
         setLoading(false);
       }, 1500);
     }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isConnected]);
 
   const copyTipLink = () => {
@@ -229,6 +242,7 @@ export default function SimpleDashboard() {
   const handleWithdrawal = async (amount: number) => {
     if (!dashboardData || !isConnected) return;
     setWithdrawalLoading(true);
+    // Simulate withdrawal
     setTimeout(() => {
       setWithdrawalLoading(false);
       alert("Withdrawal initiated successfully!");
@@ -237,44 +251,62 @@ export default function SimpleDashboard() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-gray-800 border-gray-700">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex items-center justify-center space-x-2">
-              <Heart className="h-8 w-8 text-blue-500" />
-              <span className="text-2xl font-bold text-white">tiptagI</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden flex items-center justify-center p-4">
+        {/* Animated Background */}
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-slate-900 to-slate-900" />
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-blue-500/10 rounded-full blur-3xl animate-bounce" />
+          <div className="absolute top-3/4 left-1/2 w-24 h-24 md:w-48 md:h-48 bg-pink-500/10 rounded-full blur-2xl animate-pulse delay-1000" />
+        </div>
+
+        <Card className="w-full max-w-md bg-white/5 backdrop-blur-xl border-white/20 relative z-10 shadow-2xl">
+          <CardHeader className="text-center space-y-6">
+            <div className="flex items-center justify-center space-x-3">
+              <div className="relative">
+                <Heart className="h-8 w-8 md:h-10 md:w-10 text-purple-400 animate-pulse" />
+                <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-lg animate-pulse" />
+              </div>
+              <span className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                tiptagI
+              </span>
             </div>
-            <div>
-              <CardTitle className="text-xl text-white">
+            <div className="space-y-2">
+              <CardTitle className="text-xl md:text-2xl bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
                 Connect Your Wallet
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-white/70 text-sm md:text-base">
                 Connect your wallet to access your creator dashboard
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <div className="flex justify-center">
-              <Wallet>
-                <ConnectWallet className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-3">
-                  <WalletIcon className="h-5 w-5 mr-2" />
-                  Connect Wallet
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                    <OnchainAvatar />
-                    <Name />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownLink
-                    icon="wallet"
-                    href="https://keys.coinbase.com"
-                  >
-                    Wallet
-                  </WalletDropdownLink>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                <Wallet>
+                  <ConnectWallet className="relative bg-black border-0 rounded-2xl px-6 py-3 md:px-8 md:py-4 text-white hover:bg-white/10 transition-all duration-300">
+                    <WalletIcon className="h-5 w-5 md:h-6 md:w-6 mr-2 md:mr-3" />
+                    <span className="text-base md:text-lg font-medium">
+                      Connect Wallet
+                    </span>
+                  </ConnectWallet>
+                  <WalletDropdown>
+                    <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                      <OnchainAvatar />
+                      <Name />
+                      <EthBalance />
+                    </Identity>
+                    <WalletDropdownLink
+                      icon="wallet"
+                      href="https://keys.coinbase.com"
+                    >
+                      Wallet
+                    </WalletDropdownLink>
+                    <WalletDropdownDisconnect />
+                  </WalletDropdown>
+                </Wallet>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -284,10 +316,33 @@ export default function SimpleDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
-          <p className="text-gray-400">Loading your dashboard...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-slate-900 to-slate-900" />
+          <div
+            className="absolute w-48 h-48 md:w-96 md:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+            style={{
+              left: Math.max(0, mousePosition.x - 96),
+              top: Math.max(0, mousePosition.y - 96),
+              transition: "all 0.3s ease-out",
+            }}
+          />
+        </div>
+        <div className="text-center relative z-10 space-y-6">
+          <div className="relative">
+            <Loader2 className="h-10 w-10 md:h-12 md:w-12 animate-spin text-purple-400 mx-auto" />
+            <div className="absolute -inset-4 bg-purple-500/20 rounded-full blur-xl animate-pulse" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-white/70 text-lg md:text-xl">
+              Loading your dashboard...
+            </p>
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-100"></div>
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-200"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -295,12 +350,20 @@ export default function SimpleDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-red-400">Error: {error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900/20 to-slate-900 text-white relative overflow-hidden flex items-center justify-center p-4">
+        <div className="text-center space-y-6">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
+            <X className="h-8 w-8 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-red-400 text-lg font-medium">
+              Oops! Something went wrong
+            </p>
+            <p className="text-white/70">{error}</p>
+          </div>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl px-6 py-3"
           >
             Try Again
           </Button>
@@ -311,27 +374,93 @@ export default function SimpleDashboard() {
 
   if (!dashboardData) return null;
 
+  const statCards = [
+    {
+      title: "Total Earnings",
+      value: `$${dashboardData.user.totalTipsReceived.toFixed(2)}`,
+      subtitle: "All time",
+      icon: DollarSign,
+      gradient: "from-emerald-500 to-teal-500",
+      change: "+12.5%",
+      changeType: "positive",
+    },
+    {
+      title: "Available Balance",
+      value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
+      subtitle: "Ready to withdraw",
+      icon: WalletIcon,
+      gradient: "from-blue-500 to-cyan-500",
+      change: "+$125.50",
+      changeType: "positive",
+    },
+    {
+      title: "Total Tips",
+      value: dashboardData.user.totalTipCount.toString(),
+      subtitle: `Avg: $${dashboardData.analytics.averageTip.toFixed(2)}`,
+      icon: Heart,
+      gradient: "from-pink-500 to-rose-500",
+      change: "+8",
+      changeType: "positive",
+    },
+    {
+      title: "Profile Views",
+      value: dashboardData.analytics.profileViews.toLocaleString(),
+      subtitle: `${dashboardData.analytics.conversionRate.toFixed(
+        1
+      )}% conversion`,
+      icon: Eye,
+      gradient: "from-purple-500 to-violet-500",
+      change: "+156",
+      changeType: "positive",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/95 backdrop-blur sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white relative overflow-hidden">
+      {/* Enhanced Animated Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-slate-900 to-slate-900" />
+        <div
+          className="absolute w-32 h-32 md:w-96 md:h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse"
+          style={{
+            left: Math.max(0, mousePosition.x - 96),
+            top: Math.max(0, mousePosition.y - 96),
+            transition: "all 0.5s ease-out",
+          }}
+        />
+        <div className="absolute top-1/4 left-1/4 w-24 h-24 md:w-64 md:h-64 bg-blue-500/5 rounded-full blur-2xl animate-bounce" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 md:w-80 md:h-80 bg-pink-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-3/4 left-1/2 w-20 h-20 md:w-48 md:h-48 bg-cyan-500/5 rounded-full blur-2xl animate-pulse delay-1000" />
+      </div>
+
+      {/* Mobile-First Header */}
+      <header className="relative z-50 border-b border-white/10 backdrop-blur-xl bg-black/30 sticky top-0">
+        <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Heart className="h-6 w-6 text-blue-500" />
-              <span className="text-xl font-bold">tiptagI</span>
-              <Badge className="bg-green-900 text-green-300 border-green-700">
-                Dashboard
-              </Badge>
+            {/* Logo and Brand */}
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <div className="relative group">
+                <Heart className="h-6 w-6 md:h-8 md:w-8 text-purple-400 group-hover:text-pink-400 transition-colors duration-300" />
+                <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  Tiptag
+                </span>
+                <Badge className="hidden md:flex bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 border-green-500/30 animate-pulse">
+                  <Rocket className="h-3 w-3 mr-1" />
+                  Dashboard
+                </Badge>
+              </div>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
-              <Link href={`/${dashboardData.user.tipTag}`}>
+              <Link href={`/dashboard/profile`}>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent"
+                  className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm bg-transparent"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   View Profile
@@ -341,14 +470,14 @@ export default function SimpleDashboard() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-white hover:bg-gray-800"
+                  className="text-white/80 hover:text-white hover:bg-white/10"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
               </Link>
               <Wallet>
-                <ConnectWallet className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                  <OnchainAvatar className="h-5 w-5" />
+                <ConnectWallet className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl border-0">
+                  <OnchainAvatar className="h-6 w-6" />
                   <Name />
                 </ConnectWallet>
                 <WalletDropdown>
@@ -371,8 +500,8 @@ export default function SimpleDashboard() {
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-2">
               <Wallet>
-                <ConnectWallet className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2">
-                  <OnchainAvatar className="h-4 w-4" />
+                <ConnectWallet className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl border-0 px-3 py-2">
+                  <OnchainAvatar className="h-5 w-5" />
                 </ConnectWallet>
                 <WalletDropdown>
                   <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
@@ -393,7 +522,7 @@ export default function SimpleDashboard() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-400 hover:bg-gray-800"
+                className="text-white hover:bg-white/10"
               >
                 {mobileMenuOpen ? (
                   <X className="h-5 w-5" />
@@ -406,11 +535,11 @@ export default function SimpleDashboard() {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-gray-800 pt-4 space-y-2">
+            <div className="md:hidden mt-4 pb-4 border-t border-white/10 pt-4 space-y-3">
               <Link href={`/${dashboardData.user.tipTag}`}>
                 <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-300 hover:bg-gray-800"
+                  variant="outline"
+                  className="w-full justify-start border-white/20 text-white hover:bg-white/10 bg-transparent"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
@@ -419,8 +548,8 @@ export default function SimpleDashboard() {
               </Link>
               <Link href="/dashboard/settings">
                 <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-300 hover:bg-gray-800"
+                  variant="outline"
+                  className="w-full justify-start border-white/20 text-white hover:bg-white/10 bg-transparent"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Settings className="h-4 w-4 mr-2" />
@@ -432,166 +561,198 @@ export default function SimpleDashboard() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
+      <div className="container mx-auto px-4 py-6 md:px-6 md:py-8 relative z-10">
+        {/* Welcome Section - Mobile Optimized */}
+        <div className="mb-8 md:mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Welcome back, {dashboardData.user.displayName}!
+            <div className="space-y-2 md:space-y-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+                <span className="block bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                  Welcome back,
+                </span>
+                <span className="flex items-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {dashboardData.user.displayName}!
+                  <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-yellow-400 ml-2 md:ml-4 animate-pulse" />
+                </span>
               </h1>
-              <p className="text-gray-400">
+              <p className="text-white/70 text-base md:text-xl">
                 Here's how your creator journey is progressing
               </p>
             </div>
-            <Badge className="self-start md:self-auto bg-blue-900 text-blue-300 border-blue-700 px-4 py-2">
-              <Trophy className="h-4 w-4 mr-2" />
+            <Badge className="self-start md:self-auto bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30 px-4 py-2 md:px-6 md:py-3 text-sm md:text-lg">
+              <Trophy className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               Pro Creator
             </Badge>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[
-            {
-              title: "Total Earnings",
-              value: `$${dashboardData.user.totalTipsReceived.toFixed(2)}`,
-              subtitle: "All time",
-              icon: DollarSign,
-            },
-            {
-              title: "Available Balance",
-              value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
-              subtitle: "Ready to withdraw",
-              icon: WalletIcon,
-            },
-            {
-              title: "Total Tips",
-              value: dashboardData.user.totalTipCount.toString(),
-              subtitle: `Avg: $${dashboardData.analytics.averageTip.toFixed(
-                2
-              )}`,
-              icon: Heart,
-            },
-            {
-              title: "Profile Views",
-              value: dashboardData.analytics.profileViews.toLocaleString(),
-              subtitle: `${dashboardData.analytics.conversionRate.toFixed(
-                1
-              )}% conversion`,
-              icon: Eye,
-            },
-          ].map((stat, index) => (
-            <Card key={index} className="bg-gray-800 border-gray-700">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className="h-4 w-4 text-gray-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-white mb-1">
-                  {stat.value}
-                </div>
-                <p className="text-xs text-gray-500">{stat.subtitle}</p>
-              </CardContent>
-            </Card>
+        {/* Enhanced Stats Cards - Fully Responsive */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+          {statCards.map((stat, index) => (
+            <div
+              key={index}
+              className="group cursor-pointer transform hover:scale-105 transition-all duration-500"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <Card
+                className={`bg-gradient-to-br ${stat.gradient} border-0 shadow-xl hover:shadow-2xl transition-all duration-500 relative overflow-hidden`}
+              >
+                {/* Animated background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                  <CardTitle className="text-xs md:text-sm font-medium text-white/90 truncate">
+                    {stat.title}
+                  </CardTitle>
+                  <stat.icon className="h-4 w-4 md:h-5 md:w-5 text-white/90 group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
+                </CardHeader>
+                <CardContent className="relative z-10">
+                  <div className="space-y-1 md:space-y-2">
+                    <div className="text-xl md:text-2xl lg:text-3xl font-bold text-white truncate">
+                      {stat.value}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-white/80 truncate">
+                        {stat.subtitle}
+                      </p>
+                      <div
+                        className={`flex items-center text-xs font-medium ${
+                          stat.changeType === "positive"
+                            ? "text-green-300"
+                            : "text-red-300"
+                        }`}
+                      >
+                        {stat.changeType === "positive" ? (
+                          <TrendingUp className="h-3 w-3 mr-1" />
+                        ) : (
+                          <TrendingDown className="h-3 w-3 mr-1" />
+                        )}
+                        {stat.change}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
 
-        {/* Wallet Management */}
-        <Card className="mb-8 bg-gray-800 border-gray-700">
+        {/* Enhanced Wallet Management - Mobile First */}
+        <Card className="mb-8 md:mb-12 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 backdrop-blur-xl border-blue-500/30 shadow-2xl overflow-hidden">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-3">
-                <WalletIcon className="h-5 w-5 text-blue-500" />
-                <CardTitle className="text-white">Wallet Management</CardTitle>
+                <div className="relative">
+                  <WalletIcon className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+                  <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-lg animate-pulse" />
+                </div>
+                <CardTitle className="text-blue-300 text-lg md:text-2xl">
+                  Wallet Management
+                </CardTitle>
               </div>
-              <Badge className="self-start sm:self-auto bg-green-900 text-green-300 border-green-700">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2" />
+              <Badge className="self-start sm:self-auto bg-green-500/20 text-green-300 border-green-500/30 animate-pulse">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
                 Connected
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3 mb-3">
-                  <ArrowDownLeft className="h-4 w-4 text-green-400" />
-                  <span className="font-medium text-white">
-                    Available Balance
-                  </span>
-                </div>
-                <p className="text-2xl font-bold text-white mb-2">
-                  ${dashboardData.user.walletBalance.toFixed(2)}
-                </p>
-                <Button
-                  size="sm"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() =>
-                    handleWithdrawal(dashboardData.user.walletBalance)
-                  }
-                  disabled={
-                    withdrawalLoading || dashboardData.user.walletBalance <= 0
-                  }
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {[
+                {
+                  title: "Available Balance",
+                  value: `$${dashboardData.user.walletBalance.toFixed(2)}`,
+                  icon: ArrowDownLeft,
+                  color: "green",
+                  action: "Withdraw All",
+                  actionColor: "bg-green-600 hover:bg-green-700",
+                },
+                {
+                  title: "This Month",
+                  value: `$${dashboardData.analytics.monthlyTips.toFixed(2)}`,
+                  icon: ArrowUpRight,
+                  color: "blue",
+                  subtitle: "Tips received",
+                },
+                {
+                  title: "Connected Wallet",
+                  value: `${dashboardData.user.walletAddress.slice(
+                    0,
+                    6
+                  )}...${dashboardData.user.walletAddress.slice(-4)}`,
+                  icon: WalletIcon,
+                  color: "purple",
+                  action: "Copy Address",
+                  actionColor: "bg-purple-600 hover:bg-purple-700",
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="p-4 md:p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 group space-y-3 md:space-y-4"
                 >
-                  {withdrawalLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  Withdraw All
-                </Button>
-              </div>
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3 mb-3">
-                  <ArrowUpRight className="h-4 w-4 text-blue-400" />
-                  <span className="font-medium text-white">This Month</span>
+                  <div className="flex items-center space-x-3">
+                    <item.icon
+                      className={`h-4 w-4 md:h-5 md:w-5 text-${item.color}-400 group-hover:scale-110 transition-transform duration-300`}
+                    />
+                    <span className="font-medium text-white/90 text-sm md:text-base">
+                      {item.title}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <p
+                      className={`text-lg md:text-2xl font-bold text-${item.color}-400 truncate`}
+                    >
+                      {item.value}
+                    </p>
+                    {item.subtitle && (
+                      <p className="text-white/60 text-xs md:text-sm">
+                        {item.subtitle}
+                      </p>
+                    )}
+                  </div>
+                  {item.action && (
+                    <Button
+                      size="sm"
+                      className={`w-full ${item.actionColor} text-white rounded-xl transition-all duration-300 transform hover:scale-105 text-xs md:text-sm`}
+                      onClick={() => {
+                        if (item.action === "Withdraw All") {
+                          handleWithdrawal(dashboardData.user.walletBalance);
+                        } else if (item.action === "Copy Address") {
+                          navigator.clipboard.writeText(
+                            dashboardData.user.walletAddress
+                          );
+                        }
+                      }}
+                      disabled={
+                        item.action === "Withdraw All" &&
+                        (withdrawalLoading ||
+                          dashboardData.user.walletBalance <= 0)
+                      }
+                    >
+                      {withdrawalLoading && item.action === "Withdraw All" ? (
+                        <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin mr-2" />
+                      ) : null}
+                      {item.action}
+                    </Button>
+                  )}
                 </div>
-                <p className="text-2xl font-bold text-white mb-2">
-                  ${dashboardData.analytics.monthlyTips.toFixed(2)}
-                </p>
-                <p className="text-sm text-gray-400">Tips received</p>
-              </div>
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3 mb-3">
-                  <WalletIcon className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-white">
-                    Connected Wallet
-                  </span>
-                </div>
-                <p className="text-lg font-bold text-white mb-2">
-                  {dashboardData.user.walletAddress.slice(0, 6)}...
-                  {dashboardData.user.walletAddress.slice(-4)}
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent"
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      dashboardData.user.walletAddress
-                    )
-                  }
-                >
-                  Copy Address
-                </Button>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Current Goal */}
+        {/* Current Goal Progress - Enhanced Mobile */}
         {dashboardData.currentGoal && dashboardData.currentGoal.isActive && (
-          <Card className="mb-8 bg-gray-800 border-gray-700">
+          <Card className="mb-8 md:mb-12 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 backdrop-blur-xl border-indigo-500/30 shadow-2xl overflow-hidden">
             <CardHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div className="flex items-center space-x-3">
-                  <Target className="h-5 w-5 text-blue-500" />
-                  <CardTitle className="text-white">
+                  <Target className="h-5 w-5 md:h-6 md:w-6 text-indigo-400 animate-pulse" />
+                  <CardTitle className="text-indigo-300 text-lg md:text-2xl">
                     Goal: {dashboardData.currentGoal.title}
                   </CardTitle>
                 </div>
-                <Badge className="self-start sm:self-auto bg-blue-900 text-blue-300 border-blue-700">
+                <Badge className="self-start sm:self-auto bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-sm md:text-lg px-3 py-1 md:px-4 md:py-2">
                   {Math.round(
                     (dashboardData.currentGoal.currentAmount /
                       dashboardData.currentGoal.targetAmount) *
@@ -602,21 +763,24 @@ export default function SimpleDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <Progress
-                  value={
-                    (dashboardData.currentGoal.currentAmount /
-                      dashboardData.currentGoal.targetAmount) *
-                    100
-                  }
-                  className="h-3"
-                />
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">
+              <div className="space-y-4 md:space-y-6">
+                <div className="relative">
+                  <Progress
+                    value={
+                      (dashboardData.currentGoal.currentAmount /
+                        dashboardData.currentGoal.targetAmount) *
+                      100
+                    }
+                    className="h-3 md:h-4 bg-white/10"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full blur animate-pulse" />
+                </div>
+                <div className="flex flex-col sm:flex-row sm:justify-between space-y-2 sm:space-y-0 text-sm md:text-lg">
+                  <span className="text-white/80">
                     ${dashboardData.currentGoal.currentAmount.toLocaleString()}{" "}
                     raised
                   </span>
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-indigo-300">
                     ${dashboardData.currentGoal.targetAmount.toLocaleString()}{" "}
                     goal
                   </span>
@@ -626,7 +790,7 @@ export default function SimpleDashboard() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                      className="w-full border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300 backdrop-blur-sm bg-transparent"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Goal
@@ -635,9 +799,9 @@ export default function SimpleDashboard() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                    className="flex-1 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:border-indigo-500/50 transition-all duration-300 backdrop-blur-sm bg-transparent"
                     onClick={() => {
-                      const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! $${dashboardData.currentGoal?.currentAmount}/$${dashboardData.currentGoal?.targetAmount} raised so far.`;
+                      const shareText = `Help me reach my goal: ${dashboardData.currentGoal?.title}! $${dashboardData.currentGoal?.currentAmount}/$${dashboardData.currentGoal?.targetAmount} raised so far. Support me at https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
                       if (navigator.share) {
                         navigator.share({ text: shareText });
                       } else {
@@ -654,74 +818,82 @@ export default function SimpleDashboard() {
           </Card>
         )}
 
-        {/* Tabs */}
+        {/* Enhanced Mobile-First Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="space-y-6"
+          className="space-y-6 md:space-y-8"
         >
-          {/* Mobile Tab Selector */}
+          {/* Mobile Tab Navigation */}
           <div className="md:hidden">
-            <Button
-              variant="outline"
-              className="w-full justify-between bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <span className="flex items-center">
-                {activeTab === "overview" && (
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                )}
-                {activeTab === "analytics" && (
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                )}
-                {activeTab === "transactions" && (
-                  <WalletIcon className="h-4 w-4 mr-2" />
-                )}
-                {activeTab === "community" && (
-                  <Users className="h-4 w-4 mr-2" />
-                )}
-                {activeTab === "sharing" && <Share2 className="h-4 w-4 mr-2" />}
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-              </span>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
+            <div className="relative">
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white/5 border-white/20 text-white hover:bg-white/10 backdrop-blur-sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <span className="flex items-center">
+                  {activeTab === "overview" && (
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                  )}
+                  {activeTab === "analytics" && (
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                  )}
+                  {activeTab === "transactions" && (
+                    <WalletIcon className="h-4 w-4 mr-2" />
+                  )}
+                  {activeTab === "community" && (
+                    <Users className="h-4 w-4 mr-2" />
+                  )}
+                  {activeTab === "sharing" && (
+                    <Share2 className="h-4 w-4 mr-2" />
+                  )}
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                </span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
 
-            {mobileMenuOpen && (
-              <div className="absolute mt-2 w-full bg-gray-800 border border-gray-700 rounded-lg p-2 z-50">
-                {[
-                  { value: "overview", icon: BarChart3, label: "Overview" },
-                  { value: "analytics", icon: TrendingUp, label: "Analytics" },
-                  {
-                    value: "transactions",
-                    icon: WalletIcon,
-                    label: "Transactions",
-                  },
-                  { value: "community", icon: Users, label: "Community" },
-                  { value: "sharing", icon: Share2, label: "Sharing" },
-                ].map((tab) => (
-                  <Button
-                    key={tab.value}
-                    variant="ghost"
-                    className={`w-full justify-start mb-1 last:mb-0 ${
-                      activeTab === tab.value
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700"
-                    }`}
-                    onClick={() => {
-                      setActiveTab(tab.value);
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <tab.icon className="h-4 w-4 mr-2" />
-                    {tab.label}
-                  </Button>
-                ))}
-              </div>
-            )}
+              {mobileMenuOpen && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-2 z-50">
+                  {[
+                    { value: "overview", icon: BarChart3, label: "Overview" },
+                    {
+                      value: "analytics",
+                      icon: TrendingUp,
+                      label: "Analytics",
+                    },
+                    {
+                      value: "transactions",
+                      icon: WalletIcon,
+                      label: "Transactions",
+                    },
+                    { value: "community", icon: Users, label: "Community" },
+                    { value: "sharing", icon: Share2, label: "Sharing" },
+                  ].map((tab) => (
+                    <Button
+                      key={tab.value}
+                      variant="ghost"
+                      className={`w-full justify-start mb-1 last:mb-0 ${
+                        activeTab === tab.value
+                          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                          : "text-white/70 hover:text-white hover:bg-white/10"
+                      }`}
+                      onClick={() => {
+                        setActiveTab(tab.value);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <tab.icon className="h-4 w-4 mr-2" />
+                      {tab.label}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Desktop Tabs */}
-          <TabsList className="hidden md:grid w-full grid-cols-5 bg-gray-800 border-gray-700">
+          {/* Desktop Tab Navigation */}
+          <TabsList className="hidden md:grid w-full grid-cols-5 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-2">
             {[
               { value: "overview", icon: BarChart3, label: "Overview" },
               { value: "analytics", icon: TrendingUp, label: "Analytics" },
@@ -736,7 +908,7 @@ export default function SimpleDashboard() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white text-white/70 hover:text-white transition-all duration-300 rounded-xl"
               >
                 <tab.icon className="h-4 w-4 mr-2" />
                 {tab.label}
@@ -744,45 +916,47 @@ export default function SimpleDashboard() {
             ))}
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Quick Actions */}
-              <Card className="bg-gray-800 border-gray-700">
+          {/* Tab Content */}
+          <TabsContent value="overview" className="space-y-6 md:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+              {/* Quick Actions - Mobile Optimized */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Zap className="h-5 w-5 mr-3 text-blue-500" />
-                    Quick Actions
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <Zap className="h-5 w-5 md:h-6 md:w-6 mr-3 text-purple-400" />
+                    <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Quick Actions
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/70 text-sm md:text-base">
                     Manage your tiptagI presence
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-300">
+                <CardContent className="space-y-4 md:space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-white/90">
                       Your Tip Link
                     </label>
-                    <div className="flex space-x-2">
-                      <code className="flex-1 px-3 py-2 bg-gray-700 rounded text-sm font-mono text-gray-300 truncate">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                      <code className="flex-1 px-3 py-2 md:px-4 md:py-3 bg-white/5 rounded-xl text-xs md:text-sm font-mono text-white/80 border border-white/10 truncate">
                         tiptagi.com/tip/{dashboardData.user.tipTag}
                       </code>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={copyTipLink}
-                        className="border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                        className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 bg-transparent"
                       >
                         {copied ? "Copied!" : <Copy className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Link href={`/${dashboardData.user.tipTag}`}>
                       <Button
+                        className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
                         variant="outline"
                         size="sm"
-                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Profile
@@ -790,9 +964,9 @@ export default function SimpleDashboard() {
                     </Link>
                     <Link href="/dashboard/profile">
                       <Button
+                        className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
                         variant="outline"
                         size="sm"
-                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Profile
@@ -801,38 +975,40 @@ export default function SimpleDashboard() {
                   </div>
                   <Link href="/dashboard/settings">
                     <Button
+                      className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300"
                       variant="outline"
                       size="sm"
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      Settings
+                      Account Settings
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
 
-              {/* Recent Tips */}
+              {/* Recent Tips - Enhanced Mobile Layout */}
               <div className="lg:col-span-2">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center text-white">
-                        <Gift className="h-5 w-5 mr-3 text-green-500" />
-                        Recent Tips
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                      <CardTitle className="flex items-center text-lg md:text-xl">
+                        <Gift className="h-5 w-5 md:h-6 md:w-6 mr-3 text-green-400" />
+                        <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                          Recent Tips
+                        </span>
                       </CardTitle>
                       <Link href="/dashboard/tips">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                          className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 bg-transparent"
                         >
                           View All
                           <ExternalLink className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
                     </div>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription className="text-white/70 text-sm md:text-base">
                       Your latest supporter contributions
                     </CardDescription>
                   </CardHeader>
@@ -841,41 +1017,49 @@ export default function SimpleDashboard() {
                       {dashboardData.recentTips.map((tip) => (
                         <div
                           key={tip.id}
-                          className={`p-4 rounded-lg border ${
+                          className={`p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
                             tip.isHighlighted
-                              ? "bg-yellow-900/20 border-yellow-700"
-                              : "bg-gray-700 border-gray-600"
+                              ? "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30"
+                              : "bg-white/5 border-white/10 hover:border-white/20"
                           }`}
                         >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-3">
-                              <span className="text-xl font-bold text-white">
-                                ${tip.amount.toFixed(2)}
-                              </span>
-                              <Badge className="bg-gray-600 text-gray-300">
-                                {tip.tipperName}
-                              </Badge>
+                          <div className="space-y-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-xl md:text-2xl font-bold text-white">
+                                  ${tip.amount.toFixed(2)}
+                                </span>
+                                <Badge
+                                  className={`${
+                                    tip.isHighlighted
+                                      ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                                      : "bg-white/10 text-white/80 border-white/20"
+                                  }`}
+                                >
+                                  {tip.tipperName}
+                                </Badge>
+                              </div>
                               {tip.isHighlighted && (
-                                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                                <Star className="h-5 w-5 text-yellow-400 fill-current animate-pulse" />
                               )}
                             </div>
-                          </div>
-                          {tip.message && (
-                            <p className="text-gray-300 italic mb-2">
-                              "{tip.message}"
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-500">
-                            {new Date(tip.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
+                            {tip.message && (
+                              <p className="text-white/70 italic text-sm leading-relaxed">
+                                "{tip.message}"
+                              </p>
                             )}
-                          </p>
+                            <p className="text-xs text-white/50">
+                              {new Date(tip.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -885,54 +1069,90 @@ export default function SimpleDashboard() {
             </div>
           </TabsContent>
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Tips Chart */}
-              <Card className="bg-gray-800 border-gray-700">
+          {/* Analytics Tab - Enhanced for Mobile */}
+          <TabsContent value="analytics" className="space-y-6 md:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Tips Over Time Chart */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="text-white">Tips Over Time</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Your earnings trend
+                  <CardTitle className="text-white text-lg md:text-xl">
+                    Tips Over Time
+                  </CardTitle>
+                  <CardDescription className="text-white/70">
+                    Your earnings trend over the past months
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64">
+                  <div className="h-64 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={dashboardData.tipsOverTime}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="date" stroke="#9ca3af" />
-                        <YAxis stroke="#9ca3af" />
+                      <AreaChart data={dashboardData.tipsOverTime}>
+                        <defs>
+                          <linearGradient
+                            id="colorGradient"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor="#8b5cf6"
+                              stopOpacity={0.3}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor="#8b5cf6"
+                              stopOpacity={0}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="rgba(255,255,255,0.1)"
+                        />
+                        <XAxis
+                          dataKey="date"
+                          stroke="rgba(255,255,255,0.7)"
+                          fontSize={12}
+                          tickLine={false}
+                        />
+                        <YAxis
+                          stroke="rgba(255,255,255,0.7)"
+                          fontSize={12}
+                          tickLine={false}
+                        />
                         <Tooltip
                           formatter={(value) => [`$${value}`, "Tips"]}
                           contentStyle={{
-                            backgroundColor: "#1f2937",
-                            border: "1px solid #374151",
-                            borderRadius: "8px",
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            borderRadius: "12px",
                             color: "white",
                           }}
                         />
-                        <Line
+                        <Area
                           type="monotone"
                           dataKey="amount"
-                          stroke="#3b82f6"
-                          strokeWidth={2}
-                          dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
+                          stroke="#8b5cf6"
+                          strokeWidth={3}
+                          fill="url(#colorGradient)"
+                          dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 4 }}
+                          activeDot={{ r: 6, fill: "#ec4899" }}
                         />
-                      </LineChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Geographic Data */}
-              <Card className="bg-gray-800 border-gray-700">
+              {/* Geographic Distribution */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <Globe className="h-5 w-5 mr-2 text-blue-500" />
+                  <CardTitle className="text-white text-lg md:text-xl flex items-center">
+                    <Globe className="h-5 w-5 mr-2 text-blue-400" />
                     Geographic Distribution
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/70">
                     Where your supporters are from
                   </CardDescription>
                 </CardHeader>
@@ -941,28 +1161,28 @@ export default function SimpleDashboard() {
                     {dashboardData.geographicData.map((country, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 group"
                       >
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
                           <div
-                            className="w-4 h-4 rounded-full"
+                            className="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0"
                             style={{ backgroundColor: country.color }}
                           ></div>
-                          <span className="text-white font-medium">
+                          <span className="text-white/90 font-medium text-sm md:text-base truncate">
                             {country.country}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-24 bg-gray-600 rounded-full h-2">
+                        <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+                          <div className="w-16 md:w-24 bg-white/10 rounded-full h-2 overflow-hidden">
                             <div
-                              className="h-2 rounded-full"
+                              className="h-2 rounded-full transition-all duration-500"
                               style={{
                                 width: `${country.percentage}%`,
                                 backgroundColor: country.color,
                               }}
                             ></div>
                           </div>
-                          <span className="text-gray-300 w-10 text-right">
+                          <span className="text-white/70 w-8 md:w-10 text-right font-medium text-sm">
                             {country.percentage}%
                           </span>
                         </div>
@@ -975,14 +1195,16 @@ export default function SimpleDashboard() {
           </TabsContent>
 
           {/* Transactions Tab */}
-          <TabsContent value="transactions">
-            <Card className="bg-gray-800 border-gray-700">
+          <TabsContent value="transactions" className="space-y-6 md:space-y-8">
+            <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
-                  <Activity className="h-5 w-5 mr-3 text-blue-500" />
-                  Transaction History
+                <CardTitle className="flex items-center text-lg md:text-xl">
+                  <Activity className="h-5 w-5 md:h-6 md:w-6 mr-3 text-blue-400" />
+                  <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                    Transaction History
+                  </span>
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-white/70">
                   All your tips and withdrawals
                 </CardDescription>
               </CardHeader>
@@ -991,36 +1213,42 @@ export default function SimpleDashboard() {
                   {dashboardData.recentTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 bg-gray-700 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 group"
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
                         <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                          className={`flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ${
                             transaction.type === "tip_received"
-                              ? "bg-green-600"
-                              : "bg-blue-600"
+                              ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                              : "bg-gradient-to-r from-blue-500 to-cyan-500"
                           }`}
                         >
                           {transaction.type === "tip_received" ? (
-                            <ArrowDownLeft className="h-4 w-4 text-white" />
+                            <ArrowDownLeft className="h-4 w-4 md:h-5 md:w-5 text-white" />
                           ) : (
-                            <ArrowUpRight className="h-4 w-4 text-white" />
+                            <ArrowUpRight className="h-4 w-4 md:h-5 md:w-5 text-white" />
                           )}
                         </div>
-                        <div>
-                          <p className="font-medium text-white">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-white text-sm md:text-base truncate">
                             {transaction.description}
                           </p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(
-                              transaction.createdAt
-                            ).toLocaleDateString()}
+                          <p className="text-xs text-white/60">
+                            {new Date(transaction.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex-shrink-0">
                         <p
-                          className={`font-semibold ${
+                          className={`font-semibold text-base md:text-lg ${
                             transaction.type === "tip_received"
                               ? "text-green-400"
                               : "text-blue-400"
@@ -1030,11 +1258,11 @@ export default function SimpleDashboard() {
                           {transaction.amount.toFixed(2)}
                         </p>
                         <Badge
-                          className={
+                          className={`text-xs ${
                             transaction.status === "completed"
-                              ? "bg-green-900 text-green-300 border-green-700"
-                              : "bg-yellow-900 text-yellow-300 border-yellow-700"
-                          }
+                              ? "bg-green-500/20 text-green-300 border-green-500/30"
+                              : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                          }`}
                         >
                           {transaction.status}
                         </Badge>
@@ -1047,15 +1275,18 @@ export default function SimpleDashboard() {
           </TabsContent>
 
           {/* Community Tab */}
-          <TabsContent value="community">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
+          <TabsContent value="community" className="space-y-6 md:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Top Supporters */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Trophy className="h-5 w-5 mr-3 text-yellow-500" />
-                    Top Supporters
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <Trophy className="h-5 w-5 md:h-6 md:w-6 mr-3 text-yellow-400" />
+                    <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                      Top Supporters
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/70">
                     Your most generous supporters
                   </CardDescription>
                 </CardHeader>
@@ -1064,34 +1295,34 @@ export default function SimpleDashboard() {
                     {dashboardData.topTippers.map((tipper, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+                        className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 group"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full text-white text-sm font-bold">
+                        <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
+                          <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-sm md:text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                             {index + 1}
                           </div>
-                          <div>
-                            <p className="font-medium text-white">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-white text-sm md:text-base truncate">
                               {tipper.name}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-white/60">
                               {tipper.tipCount} tips
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-white">
+                        <div className="text-right flex-shrink-0">
+                          <p className="font-semibold text-white text-base md:text-lg">
                             ${tipper.amount.toFixed(2)}
                           </p>
                           {tipper.badge && (
                             <Badge
-                              className={
+                              className={`text-xs ${
                                 tipper.badge === "Gold"
-                                  ? "bg-yellow-900 text-yellow-300 border-yellow-700"
+                                  ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
                                   : tipper.badge === "Silver"
-                                  ? "bg-gray-600 text-gray-300 border-gray-500"
-                                  : "bg-orange-900 text-orange-300 border-orange-700"
-                              }
+                                  ? "bg-gray-500/20 text-gray-300 border-gray-500/30"
+                                  : "bg-orange-500/20 text-orange-300 border-orange-500/30"
+                              }`}
                             >
                               {tipper.badge}
                             </Badge>
@@ -1103,13 +1334,16 @@ export default function SimpleDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              {/* Recent Messages */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <MessageCircle className="h-5 w-5 mr-3 text-blue-500" />
-                    Recent Messages
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <MessageCircle className="h-5 w-5 md:h-6 md:w-6 mr-3 text-blue-400" />
+                    <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                      Recent Messages
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/70">
                     Messages from your supporters
                   </CardDescription>
                 </CardHeader>
@@ -1120,15 +1354,23 @@ export default function SimpleDashboard() {
                       .map((tip) => (
                         <div
                           key={tip.id}
-                          className="p-4 bg-gray-700 rounded-lg border-l-4 border-blue-500"
+                          className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border-l-4 border-blue-500 hover:border-purple-500 transition-all duration-300 group"
                         >
-                          <p className="text-white italic mb-2">
+                          <p className="text-white/90 italic mb-3 leading-relaxed text-sm md:text-base">
                             "{tip.message}"
                           </p>
-                          <div className="flex justify-between text-xs text-gray-400">
-                            <span>— {tip.tipperName}</span>
-                            <span>
-                              {new Date(tip.createdAt).toLocaleDateString()}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-1 sm:space-y-0 text-xs text-white/60">
+                            <span className="group-hover:text-white/80 transition-colors duration-300">
+                              — {tip.tipperName}
+                            </span>
+                            <span className="group-hover:text-white/80 transition-colors duration-300">
+                              {new Date(tip.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
                             </span>
                           </div>
                         </div>
@@ -1139,99 +1381,181 @@ export default function SimpleDashboard() {
             </div>
           </TabsContent>
 
-          {/* Sharing Tab */}
-          <TabsContent value="sharing">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
+          {/* Sharing Tab - Enhanced Mobile */}
+          <TabsContent value="sharing" className="space-y-6 md:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Sharing Tools */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Share2 className="h-5 w-5 mr-3 text-green-500" />
-                    Sharing Tools
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <Share2 className="h-5 w-5 md:h-6 md:w-6 mr-3 text-green-400" />
+                    <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                      Sharing Tools
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Promote your tip page
+                  <CardDescription className="text-white/70">
+                    Promote your tip page across platforms
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent className="space-y-4 md:space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                      <Button
+                        variant="outline"
+                        onClick={copyTipLink}
+                        className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-10 md:h-12"
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Link
+                      </Button>
+                    </div>
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                      <Button
+                        variant="outline"
+                        className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-10 md:h-12"
+                      >
+                        <QrCode className="h-4 w-4 mr-2" />
+                        QR Code
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
                     <Button
                       variant="outline"
-                      onClick={copyTipLink}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                      className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-2xl h-10 md:h-12"
                     >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Link
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
-                    >
-                      <QrCode className="h-4 w-4 mr-2" />
-                      QR Code
+                      <Code className="h-4 w-4 mr-2" />
+                      Get Embed Code
                     </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
-                  >
-                    <Code className="h-4 w-4 mr-2" />
-                    Get Embed Code
-                  </Button>
-                  <div className="grid grid-cols-2 gap-2">
-                    {["Twitter", "Facebook", "Instagram", "Discord"].map(
-                      (platform) => (
-                        <Button
-                          key={platform}
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
-                        >
-                          {platform}
-                        </Button>
-                      )
-                    )}
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-white/90">
+                      Platform-Specific Shares
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        {
+                          name: "Twitter",
+                          color: "from-blue-500 to-blue-600",
+                          action: () => {
+                            const text = `Check out my tip page: https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
+                            window.open(
+                              `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                                text
+                              )}`
+                            );
+                          },
+                        },
+                        {
+                          name: "Facebook",
+                          color: "from-blue-600 to-blue-700",
+                          action: () => {
+                            const url = `https://tiptagi.com/tip/${dashboardData.user.tipTag}`;
+                            window.open(
+                              `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                                url
+                              )}`
+                            );
+                          },
+                        },
+                        {
+                          name: "Instagram",
+                          color: "from-pink-500 to-rose-600",
+                          action: () => {
+                            copyTipLink();
+                          },
+                        },
+                        {
+                          name: "Discord",
+                          color: "from-indigo-500 to-purple-600",
+                          action: () => {
+                            copyTipLink();
+                          },
+                        },
+                      ].map((platform) => (
+                        <div key={platform.name} className="relative group">
+                          <div
+                            className={`absolute -inset-1 bg-gradient-to-r ${platform.color} rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300`}
+                          ></div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={platform.action}
+                            className="relative w-full bg-black border-0 text-white hover:bg-white/10 transition-all duration-300 rounded-xl h-9"
+                          >
+                            {platform.name}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              {/* Stream Integration */}
+              <Card className="bg-white/5 backdrop-blur-xl border-white/20 shadow-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Zap className="h-5 w-5 mr-3 text-blue-500" />
-                    Stream Integration
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <Zap className="h-5 w-5 md:h-6 md:w-6 mr-3 text-purple-400" />
+                    <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Stream Integration
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-white/70">
                     Connect with streaming platforms
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 md:space-y-6">
                   {[
                     {
                       title: "Streamlabs Integration",
-                      description: "Show tip alerts during streams",
+                      description: "Show tip alerts during your streams",
+                      color: "from-purple-500/10 to-pink-500/10",
+                      borderColor: "border-purple-500/30",
+                      buttonColor: "from-purple-600 to-pink-600",
+                      action: "Connect Streamlabs",
                     },
                     {
                       title: "OBS Integration",
-                      description: "Add notifications to your scenes",
+                      description: "Add tip notifications to your scenes",
+                      color: "from-blue-500/10 to-cyan-500/10",
+                      borderColor: "border-blue-500/30",
+                      buttonColor: "from-blue-600 to-cyan-600",
+                      action: "Get OBS Code",
                     },
                     {
                       title: "Custom Webhook",
-                      description: "Send tips to any service",
+                      description: "Send tips to any service via webhook",
+                      color: "from-green-500/10 to-emerald-500/10",
+                      borderColor: "border-green-500/30",
+                      buttonColor: "from-green-600 to-emerald-600",
+                      action: "Setup Webhook",
                     },
                   ].map((integration, index) => (
-                    <div key={index} className="p-4 bg-gray-700 rounded-lg">
-                      <h4 className="font-medium text-white mb-1">
+                    <div
+                      key={index}
+                      className={`p-4 md:p-6 bg-gradient-to-r ${integration.color} rounded-2xl border ${integration.borderColor} hover:scale-105 transition-all duration-300 group space-y-3 md:space-y-4`}
+                    >
+                      <h4 className="font-medium text-white text-sm md:text-base">
                         {integration.title}
                       </h4>
-                      <p className="text-gray-400 text-sm mb-3">
+                      <p className="text-white/70 text-xs md:text-sm leading-relaxed">
                         {integration.description}
                       </p>
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        Connect
-                      </Button>
+                      <div className="relative">
+                        <div
+                          className={`absolute -inset-1 bg-gradient-to-r ${integration.buttonColor} rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300`}
+                        ></div>
+                        <Button
+                          size="sm"
+                          className={`relative bg-gradient-to-r ${integration.buttonColor} hover:scale-105 text-white rounded-xl transition-all duration-300 border-0 text-xs md:text-sm`}
+                        >
+                          {integration.action}
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </CardContent>
